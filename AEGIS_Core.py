@@ -53,7 +53,17 @@ def run_aegis_audit(api_key, payload, model_name):
         return {"risk_score": 0, "findings": [{"severity": "Error", "issue": "System Failure", "recommendation": "Check API limits or network."}]}
 
 # ────────────────────────────────────────────────
-# 2. Command Center UI (ตามดีไซน์เดิมของ Architect)
+# 2. Memory Initialization (แก้ปัญหาผลลัพธ์หาย)
+# ────────────────────────────────────────────────
+if 'audit_complete' not in st.session_state:
+    st.session_state.audit_complete = False
+    st.session_state.final_score = 0
+    st.session_state.score_1 = 0
+    st.session_state.score_2 = 0
+    st.session_state.all_findings = []
+
+# ────────────────────────────────────────────────
+# 3. Command Center UI
 # ────────────────────────────────────────────────
 st.title("🛡️ AEGIS: Enterprise Execution Guaranty System")
 st.caption("v2.0 | Cross-Model Interrogation Protocol | Authorized Personnel Only")
@@ -78,71 +88,78 @@ with col2:
     start_audit = st.button("🚀 EXECUTE MULTI-MODEL AUDIT")
 
 # ────────────────────────────────────────────────
-# 3. Real-Time Processing & The Curiosity Gap (Paywall)
+# 4. Processing Engine 
 # ────────────────────────────────────────────────
 if start_audit:
     if not groq_key or not payload_input.strip():
         st.error("❌ ERROR: Valid GROQ API KEY and Payload are required.")
     else:
         with st.spinner("AEGIS is actively interrogating the payload across neural networks..."):
-            
             result_primary = run_aegis_audit(groq_key, payload_input, "llama-3.3-70b-versatile")
             result_secondary = run_aegis_audit(groq_key, payload_input, "llama-3.1-8b-instant")
             
             score_1 = int(result_primary.get("risk_score", result_primary.get("Risk_Score", 0)))
             score_2 = int(result_secondary.get("risk_score", result_secondary.get("Risk_Score", 0)))
-            final_score = (score_1 + score_2) / 2
             
+            # บันทึกข้อมูลลงสมองของระบบ (Session State)
+            st.session_state.score_1 = score_1
+            st.session_state.score_2 = score_2
+            st.session_state.final_score = (score_1 + score_2) / 2
+            
+            findings_temp = []
+            for res in [result_primary, result_secondary]:
+                findings = res.get("findings", res.get("Findings", []))
+                if isinstance(findings, list):
+                    for item in findings:
+                        findings_temp.append({
+                            "Severity": str(item.get("severity", "Info")).capitalize(),
+                            "Issue": str(item.get("issue", "Unknown anomaly detected.")),
+                            "Recommendation": str(item.get("recommendation", "Manual review required."))
+                        })
+            
+            st.session_state.all_findings = findings_temp
+            st.session_state.audit_complete = True # บอกระบบว่าตรวจเสร็จแล้วนะ!
+
+# ────────────────────────────────────────────────
+# 5. Display Results & Paywall (The Curiosity Gap)
+# ────────────────────────────────────────────────
+# ใช้เงื่อนไข audit_complete แทน start_audit เพื่อกันจอหายตอนกรอกรหัส
+if st.session_state.audit_complete:
+    st.markdown("---")
+    st.subheader("📊 AEGIS Security Clearance Report")
+    
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        st.metric("AEGIS Final Trust Score", f"{st.session_state.final_score:.1f} / 100")
+    with m2:
+        st.metric("Llama-3.3-70B Confidence", f"{st.session_state.score_1}")
+    with m3:
+        st.metric("Llama-3.1-8B Confidence", f"{st.session_state.score_2}")
+        
+    if st.session_state.all_findings:
         st.markdown("---")
-        st.subheader("📊 AEGIS Security Clearance Report")
+        st.warning(f"🚨 **Analysis Complete:** AEGIS detected **{len(st.session_state.all_findings)} vulnerabilities/issues** in your payload.")
         
-        # 1. โชว์แค่คะแนน (The Hook)
-        m1, m2, m3 = st.columns(3)
-        with m1:
-            st.metric("AEGIS Final Trust Score", f"{final_score:.1f} / 100")
-        with m2:
-            st.metric("Llama-3.3-70B Confidence", f"{score_1}")
-        with m3:
-            st.metric("Llama-3.1-8B Confidence", f"{score_2}")
-            
-        # รวบรวม Findings
-        all_findings = []
-        for res in [result_primary, result_secondary]:
-            findings = res.get("findings", res.get("Findings", []))
-            if isinstance(findings, list):
-                for item in findings:
-                    all_findings.append({
-                        "Severity": str(item.get("severity", "Info")).capitalize(),
-                        "Issue": str(item.get("issue", "Unknown anomaly detected.")),
-                        "Recommendation": str(item.get("recommendation", "Manual review required."))
-                    })
+        st.markdown("### 🔒 Unlock Detailed Vulnerability Report")
+        st.write("To view the exact locations of these vulnerabilities and get actionable remediation steps, please enter your Premium Passcode.")
         
-        # 2. ระบบ Paywall (ถ้าเจอช่องโหว่ ให้ล็อคผลลัพธ์ไว้)
-        if all_findings:
-            st.markdown("---")
-            st.warning(f"🚨 **Analysis Complete:** AEGIS detected **{len(all_findings)} vulnerabilities/issues** in your payload.")
+        # ช่องกรอกรหัส คราวนี้พิมพ์แล้วจะไม่เด้งหายแล้ว!
+        unlock_code = st.text_input("Enter your Passcode:", type="password", placeholder="e.g. UNLOCK9")
+        
+        if unlock_code == "UNLOCK9":
+            st.success("✅ Access Granted. Displaying Full Enterprise Matrix.")
+            df = pd.DataFrame(st.session_state.all_findings)
             
-            st.markdown("### 🔒 Unlock Detailed Vulnerability Report")
-            st.write("To view the exact locations of these vulnerabilities and get actionable remediation steps, please enter your Premium Passcode.")
-            
-            # ช่องกรอกรหัส
-            unlock_code = st.text_input("Enter your Passcode:", type="password", placeholder="e.g. AEGIS-PRO-XXX")
-            
-            if unlock_code == "UNLOCK9":
-                st.success("✅ Access Granted. Displaying Full Enterprise Matrix.")
-                df = pd.DataFrame(all_findings)
+            def color_severity(val):
+                if val == 'Critical': return 'color: #ff4b4b; font-weight: bold;'
+                elif val == 'Warning': return 'color: #ffa421;'
+                return 'color: #3dd56d;'
                 
-                # แต่งสี
-                def color_severity(val):
-                    if val == 'Critical': return 'color: #ff4b4b; font-weight: bold;'
-                    elif val == 'Warning': return 'color: #ffa421;'
-                    return 'color: #3dd56d;'
-                    
-                styled_df = df.style.map(color_severity, subset=['Severity'])
-                st.dataframe(styled_df, use_container_width=True)
-            elif unlock_code:
-                st.error("❌ Invalid Passcode. Please check your purchase receipt.")
-            else:
-                st.info("👉 **[Get your Premium Passcode for $9 on Gumroad](https://gumroad.com)**")
+            styled_df = df.style.map(color_severity, subset=['Severity'])
+            st.dataframe(styled_df, use_container_width=True)
+        elif unlock_code:
+            st.error("❌ Invalid Passcode. Please check your purchase receipt.")
         else:
-            st.success("✅ VERDICT: Payload meets AEGIS enterprise security standards. No vulnerabilities detected.")
+            st.info("👉 **[Get your Premium Passcode for $9 on Gumroad](https://gumroad.com)**")
+    else:
+        st.success("✅ VERDICT: Payload meets AEGIS enterprise security standards. No vulnerabilities detected.")

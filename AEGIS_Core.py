@@ -6,7 +6,7 @@ from groq import Groq
 # ────────────────────────────────────────────────
 # 1. ENTERPRISE CONFIG & UI CLOAKING
 # ────────────────────────────────────────────────
-st.set_page_config(page_title="AEGIS | Enterprise Security Scanner", layout="centered")
+st.set_page_config(page_title="AEGIS | Enterprise Security Scanner", layout="centered", page_icon="🛡️")
 
 st.markdown("""
     <style>
@@ -23,6 +23,13 @@ st.markdown("""
     .metric-box { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; text-align: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); margin: 20px 0; }
     .locked-content { background: repeating-linear-gradient(45deg, #161b22, #161b22 10px, #0d1117 10px, #0d1117 20px); border: 1px dashed #e3b341; padding: 20px; border-radius: 8px; text-align: center; color: #e3b341; margin-top: 15px;}
     .custom-footer { text-align: center; color: #8b949e; font-size: 12px; margin-top: 50px; opacity: 0.7; }
+    
+    /* ⚡ CAPABILITY MATRIX STYLING */
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px; margin-top: 10px; }
+    .feature-card { background: #161b22; border: 1px solid #30363d; padding: 15px; border-radius: 8px; transition: 0.3s; }
+    .feature-card:hover { border-color: #58a6ff; box-shadow: 0 0 10px rgba(88, 166, 255, 0.2); }
+    .feature-title { color: #58a6ff; font-weight: bold; font-size: 15px; margin-bottom: 5px; }
+    .feature-desc { color: #8b949e; font-size: 13px; line-height: 1.4; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -75,10 +82,32 @@ if 'unlocked' not in st.session_state:
     st.session_state.unlocked = False
 
 # ────────────────────────────────────────────────
-# 4. DASHBOARD (The Hook)
+# 4. DASHBOARD & CAPABILITY MATRIX
 # ────────────────────────────────────────────────
 st.title("🛡️ AEGIS")
 st.markdown("<p style='text-align:center; color:#8b949e; font-size: 16px;'>Enterprise-Grade Execution Guaranty System</p>", unsafe_allow_html=True)
+
+# THE VALUE PROPOSITION SECTION
+st.markdown("""
+<div class="feature-grid">
+    <div class="feature-card">
+        <div class="feature-title">💻 Source Code & Security</div>
+        <div class="feature-desc">Scan Python, JS, and API logic for OWASP threats, memory leaks, and hidden vulnerabilities.</div>
+    </div>
+    <div class="feature-card">
+        <div class="feature-title">🤖 B2B Workflow Logic</div>
+        <div class="feature-desc">Detect infinite loops, missing fallbacks, and logic blind spots in your AI automations.</div>
+    </div>
+    <div class="feature-card">
+        <div class="feature-title">🔗 Web3 & Smart Contracts</div>
+        <div class="feature-desc">Audit Solidity/Rust code to prevent exploits, reentrancy attacks, and gas inefficiencies.</div>
+    </div>
+    <div class="feature-card">
+        <div class="feature-title">⚖️ Legal & Business Contracts</div>
+        <div class="feature-desc">Analyze NDAs and business agreements for legal loopholes and unbalanced liabilities.</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 payload = st.text_area("TARGET PAYLOAD:", height=200, placeholder="Paste your code, business logic, or contract here to scan for hidden liabilities...")
 
@@ -141,10 +170,9 @@ if st.session_state.scanned and st.session_state.result:
                     else:
                         st.error("❌ Invalid Passcode. Please check your receipt.")
                 
-                # ลิงก์ของจริงของคุณถูกใส่ไว้ตรงนี้แล้ว!
                 st.markdown("[👉 **Don't have a passcode? Get it here for $9**](https://porschza.gumroad.com/l/AEGIS)")
                 
     else:
         st.success("✅ No critical vulnerabilities detected. Payload is clear.")
 
-st.markdown("<div class='custom-footer'>AEGIS v6.3 (Production Release) | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)
+st.markdown("<div class='custom-footer'>AEGIS v6.4 (Value Proposition Update) | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)

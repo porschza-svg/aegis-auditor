@@ -1,68 +1,142 @@
 import streamlit as st
 import json
+import time
 from groq import Groq
-from datetime import datetime
 
-st.set_page_config(page_title="AEGIS v5.0 – Instant Security Scanner", layout="centered")
+# ────────────────────────────────────────────────
+# 1. ENTERPRISE CONFIG & UI STYLING
+# ────────────────────────────────────────────────
+st.set_page_config(page_title="AEGIS | Enterprise Security Scanner", layout="centered")
 
 st.markdown("""
     <style>
     .main { background-color: #0d1117; color: #e6edf3; font-family: 'Segoe UI', sans-serif; }
-    h1 { color: #58a6ff; text-align: center; }
-    .stButton>button { width: 100%; background: linear-gradient(90deg, #238636, #2ea043); color: white; font-size: 20px; padding: 16px; border-radius: 10px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); transition: all 0.3s; }
-    .stButton>button:hover { background: linear-gradient(90deg, #2ea043, #3fb950); transform: translateY(-2px); }
-    .stTextArea>div>div>textarea { background: #161b22; color: #e6edf3; border: 1px solid #30363d; border-radius: 8px; font-size: 16px; }
-    .metric-box { background: #161b22; padding: 20px; border-radius: 12px; border: 1px solid #30363d; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.4); margin: 20px 0; }
-    .footer { text-align: center; color: #8b949e; font-size: 12px; margin-top: 40px; }
+    h1 { color: #58a6ff; text-align: center; text-transform: uppercase; letter-spacing: 2px;}
+    .stButton>button { width: 100%; background: linear-gradient(90deg, #1f6feb, #388bfd); color: white; font-size: 18px; font-weight: bold; padding: 12px; border-radius: 8px; border: none; box-shadow: 0 4px 15px rgba(31, 111, 235, 0.4); transition: all 0.3s; }
+    .stButton>button:hover { background: linear-gradient(90deg, #388bfd, #58a6ff); transform: translateY(-2px); }
+    .metric-box { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; text-align: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); margin: 20px 0; }
+    .locked-content { background: repeating-linear-gradient(45deg, #161b22, #161b22 10px, #0d1117 10px, #0d1117 20px); border: 1px dashed #e3b341; padding: 20px; border-radius: 8px; text-align: center; color: #e3b341; margin-top: 15px;}
+    .footer { text-align: center; color: #8b949e; font-size: 12px; margin-top: 50px; opacity: 0.7; }
     </style>
 """, unsafe_allow_html=True)
 
+# ────────────────────────────────────────────────
+# 2. NEURAL ENGINE (Prompt & API)
+# ────────────────────────────────────────────────
 AUDITOR_PROMPT = """
-You are AEGIS v5.0, elite security auditor.
-Analyze the code/contract.
+You are AEGIS, an elite security and logic auditor.
+Analyze the payload. Identify at least 3 vulnerabilities, logical flaws, or areas for improvement.
 Output ONLY valid JSON:
 {
-  "trust_score": <0-100, 100 = perfectly safe>,
-  "issues_count": <number>,
-  "summary": "<1 short sentence>"
+  "trust_score": <int 0-100>,
+  "findings": [
+    {"issue": "<Short, punchy description>", "severity": "<Critical/Warning/Info>", "remediation": "<Actionable fix>"}
+  ]
 }
 """
 
-def run_audit(payload):
+def run_audit(api_key, payload):
     try:
-        client = Groq(api_key=st.secrets.get("GROQ_API_KEY", "your-key-here"))
+        client = Groq(api_key=api_key)
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": f"Quick scan this:\n\n{payload[:3000]}"}],
+            messages=[
+                {"role": "system", "content": AUDITOR_PROMPT},
+                {"role": "user", "content": f"Scan this:\n\n{payload[:3000]}"}
+            ],
             temperature=0.0,
-            max_tokens=80,
+            max_tokens=500,
             response_format={"type": "json_object"}
         )
         return json.loads(response.choices[0].message.content.strip())
-    except:
-        return {"trust_score": 50, "issues_count": 0, "summary": "Scan completed (demo mode)"}
+    except Exception as e:
+        return {"trust_score": 0, "findings": [{"issue": "System error or Invalid API Key.", "severity": "Critical", "remediation": "Check system config."}]}
 
-st.title("🛡️ AEGIS v5.0 – Instant Security Scanner")
-st.markdown("<p style='text-align:center; color:#8b949e;'>Free basic scan | Unlock full report $9</p>", unsafe_allow_html=True)
+# ────────────────────────────────────────────────
+# 3. MEMORY SYSTEM (ระบบจำสถานะไม่ให้จอหาย)
+# ────────────────────────────────────────────────
+if 'scanned' not in st.session_state:
+    st.session_state.scanned = False
+    st.session_state.result = None
+if 'unlocked' not in st.session_state:
+    st.session_state.unlocked = False
 
-payload = st.text_area("", height=140, placeholder="Paste code or contract here... (max 3000 characters)")
+# ────────────────────────────────────────────────
+# 4. DASHBOARD (The Hook)
+# ────────────────────────────────────────────────
+st.title("🛡️ AEGIS")
+st.markdown("<p style='text-align:center; color:#8b949e; font-size: 16px;'>Enterprise-Grade Execution Guaranty System</p>", unsafe_allow_html=True)
 
-if st.button("SCAN NOW – Free"):
-    if not payload.strip():
-        st.warning("Please paste code or contract first")
+# ให้ลูกค้าใส่ API Key ของตัวเองเพื่อลดต้นทุนเซิร์ฟเวอร์ของเรา (หรือคุณจะเอาไปซ่อนทีหลังก็ได้)
+groq_key = st.text_input("🔑 INITIALIZE: Enter GROQ API KEY", type="password")
+
+payload = st.text_area("TARGET PAYLOAD:", height=200, placeholder="Paste your code, business logic, or contract here to scan for hidden liabilities...")
+
+if st.button("🚀 INITIATE SECURE SCAN (Free Basic Report)"):
+    if not groq_key or not payload.strip():
+        st.error("❌ ERROR: Valid API Key and Payload are required.")
     else:
-        with st.spinner("AEGIS scanning..."):
-            result = run_audit(payload)
+        progress_text = "Establishing neural link..."
+        my_bar = st.progress(0, text=progress_text)
+        time.sleep(0.5)
+        my_bar.progress(50, text="Interrogating logic across models...")
+        
+        st.session_state.result = run_audit(groq_key, payload)
+        st.session_state.scanned = True
+        st.session_state.unlocked = False # รีเซ็ตการปลดล็อกทุกครั้งที่สแกนใหม่
+        
+        my_bar.progress(100, text="Scan Complete.")
+        time.sleep(0.5)
+        my_bar.empty()
 
-        st.markdown("---")
-        st.markdown("<div class='metric-box'>", unsafe_allow_html=True)
-        st.metric("Trust Score (Basic Scan)", f"{result['trust_score']}/100", delta_color="normal")
-        st.markdown("</div>", unsafe_allow_html=True)
+# ────────────────────────────────────────────────
+# 5. THE PAYWALL & GUMROAD INTEGRATION
+# ────────────────────────────────────────────────
+if st.session_state.scanned and st.session_state.result:
+    res = st.session_state.result
+    
+    st.markdown("---")
+    st.markdown("<div class='metric-box'>", unsafe_allow_html=True)
+    st.metric("AEGIS Trust Score", f"{res.get('trust_score', 0)} / 100")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-        st.info(result['summary'])
+    findings = res.get("findings", [])
+    
+    if len(findings) > 0:
+        st.subheader("🚨 Threat Matrix")
+        
+        # ของฟรี: โชว์ข้อแรก
+        st.error(f"**[{findings[0].get('severity')}]:** {findings[0].get('issue')}\n\n*Solution: {findings[0].get('remediation')}*")
+        
+        if len(findings) > 1:
+            hidden_count = len(findings) - 1
+            
+            # ถ้าระบบจำได้ว่าปลดล็อกแล้ว (st.session_state.unlocked == True)
+            if st.session_state.unlocked:
+                st.success("✅ Enterprise Mode Unlocked. Displaying Full Report:")
+                for i in range(1, len(findings)):
+                    st.warning(f"**[{findings[i].get('severity')}]:** {findings[i].get('issue')}\n\n*Solution: {findings[i].get('remediation')}*")
+            
+            # ถ้ายังไม่ปลดล็อก ให้โชว์ Paywall
+            else:
+                st.markdown(f"<div class='locked-content'>🔒 <b>{hidden_count} Critical Vulnerabilities Hidden</b><br>Upgrade to Enterprise to reveal exact locations and actionable remediation steps.</div>", unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("### 🔑 Enter Premium Passcode")
+                
+                unlock_code = st.text_input("Enter the code from your Gumroad receipt:", placeholder="e.g., AEGIS-PRO-99", type="password")
+                
+                # ปุ่มกดเพื่อยืนยันรหัส
+                if st.button("🔓 UNLOCK REPORT"):
+                    if unlock_code == "AEGIS-PRO-99": # <--- เปลี่ยนรหัสตรงนี้ให้ตรงกับ Gumroad ของคุณ
+                        st.session_state.unlocked = True
+                        st.rerun() # สั่งรีเฟรชหน้าเว็บเพื่อให้ตารางกางออก
+                    else:
+                        st.error("❌ Invalid Passcode. Please check your receipt.")
+                
+                st.markdown("[👉 **Don't have a passcode? Get it here for $9**](https://porschza.gumroad.com/l/aegis-v5-full-report)")
+                
+    else:
+        st.success("✅ No critical vulnerabilities detected. Payload is clear.")
 
-        st.markdown("### Want the Full Report & Fixes?")
-        st.markdown("Unlock detailed vulnerability report + remediation steps for $9 (one-time payment)")
-        st.markdown("[Unlock Now $9 – Instant Download](https://porschza.gumroad.com/l/aegis-v5-full-report)")
-
-st.markdown("<div class='footer'>AEGIS v5.0 – Powered by Grok & Shelby Systems – Instant. Secure. Global.</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer'>AEGIS v6.0 | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)

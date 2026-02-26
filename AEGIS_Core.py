@@ -34,7 +34,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────
-# 2. NEURAL ENGINE (Prompt & API Secure Fetch)
+# 2. NEURAL ENGINE
 # ────────────────────────────────────────────────
 AUDITOR_PROMPT = """
 You are AEGIS, an elite security and logic auditor.
@@ -87,7 +87,6 @@ if 'unlocked' not in st.session_state:
 st.title("🛡️ AEGIS")
 st.markdown("<p style='text-align:center; color:#8b949e; font-size: 16px;'>Enterprise-Grade Execution Guaranty System</p>", unsafe_allow_html=True)
 
-# THE VALUE PROPOSITION SECTION
 st.markdown("""
 <div class="feature-grid">
     <div class="feature-card">
@@ -161,7 +160,8 @@ if st.session_state.scanned and st.session_state.result:
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("### 🔑 Enter Premium Passcode")
                 
-                unlock_code = st.text_input("Enter the code from your Gumroad receipt:", placeholder="e.g., NEXUS-AEGIS-V6-SECURE", type="password")
+                # ✅ แก้ไขตรงนี้: เปลี่ยน placeholder ไม่ให้โชว์รหัสจริงแล้ว!
+                unlock_code = st.text_input("Enter the code from your Gumroad receipt:", placeholder="e.g., AEGIS-XXXX-XXXX", type="password")
                 
                 if st.button("🔓 UNLOCK REPORT"):
                     if unlock_code == "NEXUS-AEGIS-V6-SECURE": 
@@ -175,4 +175,4 @@ if st.session_state.scanned and st.session_state.result:
     else:
         st.success("✅ No critical vulnerabilities detected. Payload is clear.")
 
-st.markdown("<div class='custom-footer'>AEGIS v6.4 (Value Proposition Update) | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)
+st.markdown("<div class='custom-footer'>AEGIS v6.5 (Security Patch) | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)

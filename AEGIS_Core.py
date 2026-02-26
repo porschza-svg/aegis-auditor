@@ -135,17 +135,16 @@ if st.session_state.scanned and st.session_state.result:
                 unlock_code = st.text_input("Enter the code from your Gumroad receipt:", placeholder="e.g., NEXUS-AEGIS-V6-SECURE", type="password")
                 
                 if st.button("🔓 UNLOCK REPORT"):
-                    # อัปเกรดรหัสผ่านใหม่ที่นี่
                     if unlock_code == "NEXUS-AEGIS-V6-SECURE": 
                         st.session_state.unlocked = True
                         st.rerun() 
                     else:
                         st.error("❌ Invalid Passcode. Please check your receipt.")
                 
-                # ลิงก์รอการอัปเดตเป็นของจริง
-                st.markdown("[👉 **Don't have a passcode? Get it here for $9**](https://gumroad.com)")
+                # ลิงก์ของจริงของคุณถูกใส่ไว้ตรงนี้แล้ว!
+                st.markdown("[👉 **Don't have a passcode? Get it here for $9**](https://porschza.gumroad.com/l/AEGIS)")
                 
     else:
         st.success("✅ No critical vulnerabilities detected. Payload is clear.")
 
-st.markdown("<div class='custom-footer'>AEGIS v6.2 | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)
+st.markdown("<div class='custom-footer'>AEGIS v6.3 (Production Release) | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)

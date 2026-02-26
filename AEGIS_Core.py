@@ -3,9 +3,6 @@ import json
 from groq import Groq
 from datetime import datetime
 
-# ────────────────────────────────────────────────
-# CONFIG & STYLE (v5.0: เรียบง่ายสุด, โหลดเร็ว, มือถือดี, premium vibe)
-# ────────────────────────────────────────────────
 st.set_page_config(page_title="AEGIS v5.0 – Instant Security Scanner", layout="centered")
 
 st.markdown("""
@@ -20,7 +17,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Prompt v5.0 (สั้น กระชับ เน้น JSON เท่านั้น)
 AUDITOR_PROMPT = """
 You are AEGIS v5.0, elite security auditor.
 Analyze the code/contract.
@@ -46,19 +42,16 @@ def run_audit(payload):
     except:
         return {"trust_score": 50, "issues_count": 0, "summary": "Scan completed (demo mode)"}
 
-# ────────────────────────────────────────────────
-# UI ใหม่ทั้งหมด (v5.0: เรียบง่าย, ดึงดูด, paywall ชัดเจน)
-# ────────────────────────────────────────────────
 st.title("🛡️ AEGIS v5.0 – Instant Security Scanner")
 st.markdown("<p style='text-align:center; color:#8b949e;'>Free basic scan | Unlock full report $9</p>", unsafe_allow_html=True)
 
-payload = st.text_area("", height=140, placeholder="วางโค้ดหรือสัญญาที่นี่... (max 3000 ตัวอักษร)")
+payload = st.text_area("", height=140, placeholder="Paste code or contract here... (max 3000 characters)")
 
 if st.button("SCAN NOW – Free"):
     if not payload.strip():
-        st.warning("กรุณาวางโค้ดหรือสัญญาก่อน")
+        st.warning("Please paste code or contract first")
     else:
-        with st.spinner("AEGIS กำลังสแกน..."):
+        with st.spinner("AEGIS scanning..."):
             result = run_audit(payload)
 
         st.markdown("---")
@@ -68,8 +61,8 @@ if st.button("SCAN NOW – Free"):
 
         st.info(result['summary'])
 
-        st.markdown("### อยากได้รายงานเต็ม + วิธีแก้ไข?")
-        st.markdown("ปลดล็อก Full Report เพียง $9 (จ่ายครั้งเดียว ได้ตลอด)")
+        st.markdown("### Want the Full Report & Fixes?")
+        st.markdown("Unlock detailed vulnerability report + remediation steps for $9 (one-time payment)")
         st.markdown("[Unlock Now $9 – Instant Download](https://porschza.gumroad.com/l/aegis-v5-full-report)")
 
 st.markdown("<div class='footer'>AEGIS v5.0 – Powered by Grok & Shelby Systems – Instant. Secure. Global.</div>", unsafe_allow_html=True)

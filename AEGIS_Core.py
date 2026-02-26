@@ -4,13 +4,13 @@ import time
 from groq import Groq
 
 # ────────────────────────────────────────────────
-# 1. ENTERPRISE CONFIG & UI CLOAKING (SECURITY PATCH)
+# 1. ENTERPRISE CONFIG & UI CLOAKING
 # ────────────────────────────────────────────────
 st.set_page_config(page_title="AEGIS | Enterprise Security Scanner", layout="centered")
 
 st.markdown("""
     <style>
-    /* 🛡️ CLOAK STREAMLIT UI (Hide GitHub link and menus) */
+    /* 🛡️ CLOAK STREAMLIT UI */
     [data-testid="stHeader"] {visibility: hidden;}
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
@@ -43,7 +43,6 @@ Output ONLY valid JSON:
 
 def run_audit(payload):
     try:
-        # 🔒 ดึง API Key จากตู้เซฟ Streamlit Secrets (ลูกค้ามองไม่เห็น 100%)
         api_key = st.secrets["GROQ_API_KEY"]
         client = Groq(api_key=api_key)
         
@@ -67,7 +66,7 @@ def run_audit(payload):
         }
 
 # ────────────────────────────────────────────────
-# 3. MEMORY SYSTEM (ระบบจำสถานะไม่ให้จอหาย)
+# 3. MEMORY SYSTEM
 # ────────────────────────────────────────────────
 if 'scanned' not in st.session_state:
     st.session_state.scanned = False
@@ -76,7 +75,7 @@ if 'unlocked' not in st.session_state:
     st.session_state.unlocked = False
 
 # ────────────────────────────────────────────────
-# 4. DASHBOARD (The Hook - ไร้รอยต่อ ไม่มีช่องใส่ API Key)
+# 4. DASHBOARD (The Hook)
 # ────────────────────────────────────────────────
 st.title("🛡️ AEGIS")
 st.markdown("<p style='text-align:center; color:#8b949e; font-size: 16px;'>Enterprise-Grade Execution Guaranty System</p>", unsafe_allow_html=True)
@@ -94,7 +93,7 @@ if st.button("🚀 INITIATE SECURE SCAN (Free Basic Report)"):
         
         st.session_state.result = run_audit(payload)
         st.session_state.scanned = True
-        st.session_state.unlocked = False # รีเซ็ตการปลดล็อกทุกครั้งที่สแกนใหม่
+        st.session_state.unlocked = False 
         
         my_bar.progress(100, text="Scan Complete.")
         time.sleep(0.5)
@@ -116,40 +115,37 @@ if st.session_state.scanned and st.session_state.result:
     if len(findings) > 0:
         st.subheader("🚨 Threat Matrix")
         
-        # ของฟรี: โชว์ข้อแรก
         first_finding = findings[0]
         st.error(f"**[{first_finding.get('severity', 'Alert')}]:** {first_finding.get('issue', 'Issue detected')}\n\n*Solution: {first_finding.get('remediation', 'Manual review required')}*")
         
         if len(findings) > 1:
             hidden_count = len(findings) - 1
             
-            # ถ้าระบบจำได้ว่าปลดล็อกแล้ว
             if st.session_state.unlocked:
                 st.success("✅ Enterprise Mode Unlocked. Displaying Full Report:")
                 for i in range(1, len(findings)):
                     item = findings[i]
                     st.warning(f"**[{item.get('severity', 'Warning')}]:** {item.get('issue', 'Unknown anomaly')}\n\n*Solution: {item.get('remediation', 'Consult architect')}*")
-            
-            # ถ้ายังไม่ปลดล็อก ให้โชว์ Paywall
             else:
                 st.markdown(f"<div class='locked-content'>🔒 <b>{hidden_count} Critical Vulnerabilities Hidden</b><br>Upgrade to Enterprise to reveal exact locations and actionable remediation steps.</div>", unsafe_allow_html=True)
                 
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("### 🔑 Enter Premium Passcode")
                 
-                unlock_code = st.text_input("Enter the code from your Gumroad receipt:", placeholder="e.g., AEGIS-PRO-99", type="password")
+                unlock_code = st.text_input("Enter the code from your Gumroad receipt:", placeholder="e.g., NEXUS-AEGIS-V6-SECURE", type="password")
                 
-                # ปุ่มกดเพื่อยืนยันรหัส
                 if st.button("🔓 UNLOCK REPORT"):
-                    if unlock_code == "AEGIS-PRO-99": # รหัสผ่าน Gumroad
+                    # อัปเกรดรหัสผ่านใหม่ที่นี่
+                    if unlock_code == "NEXUS-AEGIS-V6-SECURE": 
                         st.session_state.unlocked = True
-                        st.rerun() # สั่งรีเฟรชหน้าเว็บเพื่อให้ตารางกางออก
+                        st.rerun() 
                     else:
                         st.error("❌ Invalid Passcode. Please check your receipt.")
                 
-                st.markdown("[👉 **Don't have a passcode? Get it here for $9**](https://porschza.gumroad.com/l/aegis-v5-full-report)")
+                # ลิงก์รอการอัปเดตเป็นของจริง
+                st.markdown("[👉 **Don't have a passcode? Get it here for $9**](https://gumroad.com)")
                 
     else:
         st.success("✅ No critical vulnerabilities detected. Payload is clear.")
 
-st.markdown("<div class='custom-footer'>AEGIS v6.1 | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)
+st.markdown("<div class='custom-footer'>AEGIS v6.2 | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)

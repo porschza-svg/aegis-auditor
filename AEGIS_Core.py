@@ -24,17 +24,20 @@ st.markdown("""
     .locked-content { background: repeating-linear-gradient(45deg, #161b22, #161b22 10px, #0d1117 10px, #0d1117 20px); border: 1px dashed #e3b341; padding: 20px; border-radius: 8px; text-align: center; color: #e3b341; margin-top: 15px;}
     .custom-footer { text-align: center; color: #8b949e; font-size: 12px; margin-top: 50px; opacity: 0.7; }
     
-    /* ⚡ CAPABILITY MATRIX STYLING */
+    /* ⚡ CAPABILITY MATRIX */
     .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px; margin-top: 10px; }
     .feature-card { background: #161b22; border: 1px solid #30363d; padding: 15px; border-radius: 8px; transition: 0.3s; }
     .feature-card:hover { border-color: #58a6ff; box-shadow: 0 0 10px rgba(88, 166, 255, 0.2); }
     .feature-title { color: #58a6ff; font-weight: bold; font-size: 15px; margin-bottom: 5px; }
     .feature-desc { color: #8b949e; font-size: 13px; line-height: 1.4; }
+    
+    /* 💬 CHAT UI */
+    .chat-container { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-top: 30px; }
     </style>
 """, unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────
-# 2. NEURAL ENGINE
+# 2. NEURAL ENGINES (Scanner & Consultant)
 # ────────────────────────────────────────────────
 AUDITOR_PROMPT = """
 You are AEGIS, an elite security and logic auditor.
@@ -65,21 +68,43 @@ def run_audit(payload):
         )
         return json.loads(response.choices[0].message.content.strip())
     except Exception as e:
-        return {
-            "trust_score": 0, 
-            "findings": [
-                {"issue": "System error or Missing API Key in Streamlit Secrets.", "severity": "Critical", "remediation": "Check system configuration."}
-            ]
-        }
+        return {"trust_score": 0, "findings": [{"issue": "System error or Missing API Key in Streamlit Secrets.", "severity": "Critical", "remediation": "Check system configuration."}]}
+
+def chat_with_consultant(user_input, original_payload, scan_results):
+    try:
+        api_key = st.secrets["GROQ_API_KEY"]
+        client = Groq(api_key=api_key)
+        
+        # ใส่สมองให้ AI รู้ว่ากำลังคุยเรื่องโค้ดอะไรอยู่
+        system_context = f"You are AEGIS, an elite Enterprise Security Consultant. The user just scanned their payload and unlocked the premium report. Answer their questions professionally, strictly focusing on fixing the vulnerabilities found. \n\nTarget Payload Snippet: {original_payload[:1500]}\n\nScan Findings: {json.dumps(scan_results)}"
+        
+        # ดึงประวัติการแชทมาเรียงต่อกัน
+        messages = [{"role": "system", "content": system_context}]
+        for msg in st.session_state.chat_history:
+            messages.append({"role": msg["role"], "content": msg["content"]})
+            
+        messages.append({"role": "user", "content": user_input})
+        
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=messages,
+            temperature=0.3,
+            max_tokens=1024
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return "⚠️ Communication link failed. Please check your system configuration."
 
 # ────────────────────────────────────────────────
-# 3. MEMORY SYSTEM
+# 3. MEMORY SYSTEM (อัปเกรดเพิ่มความจำแชท)
 # ────────────────────────────────────────────────
 if 'scanned' not in st.session_state:
     st.session_state.scanned = False
     st.session_state.result = None
 if 'unlocked' not in st.session_state:
     st.session_state.unlocked = False
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
 
 # ────────────────────────────────────────────────
 # 4. DASHBOARD & CAPABILITY MATRIX
@@ -122,13 +147,14 @@ if st.button("🚀 INITIATE SECURE SCAN (Free Basic Report)"):
         st.session_state.result = run_audit(payload)
         st.session_state.scanned = True
         st.session_state.unlocked = False 
+        st.session_state.chat_history = [] # ล้างแชทเก่าทิ้งทุกครั้งที่สแกนใหม่
         
         my_bar.progress(100, text="Scan Complete.")
         time.sleep(0.5)
         my_bar.empty()
 
 # ────────────────────────────────────────────────
-# 5. THE PAYWALL & GUMROAD INTEGRATION
+# 5. THE PAYWALL & PREMIUM CONSULTANT CHAT
 # ────────────────────────────────────────────────
 if st.session_state.scanned and st.session_state.result:
     res = st.session_state.result
@@ -149,21 +175,52 @@ if st.session_state.scanned and st.session_state.result:
         if len(findings) > 1:
             hidden_count = len(findings) - 1
             
+            # ✅ โซนลูกค้า VIP ปลดล็อคแล้ว
             if st.session_state.unlocked:
                 st.success("✅ Enterprise Mode Unlocked. Displaying Full Report:")
                 for i in range(1, len(findings)):
                     item = findings[i]
-                    st.warning(f"**[{item.get('severity', 'Warning')}]:** {item.get('issue', 'Unknown anomaly')}\n\n*Solution: {item.get('remediation', 'Consult architect')}*")
+                    # ใช้สีให้ตรงกับความรุนแรง
+                    if item.get('severity') == 'Critical':
+                        st.error(f"**[{item.get('severity')}]:** {item.get('issue')}\n\n*Solution: {item.get('remediation')}*")
+                    elif item.get('severity') == 'Warning':
+                        st.warning(f"**[{item.get('severity')}]:** {item.get('issue')}\n\n*Solution: {item.get('remediation')}*")
+                    else:
+                        st.info(f"**[{item.get('severity')}]:** {item.get('issue')}\n\n*Solution: {item.get('remediation')}*")
+                
+                # 💬 PREMIUM CONSULTANT CHAT MODULE
+                st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
+                st.subheader("💬 AEGIS Interactive Consultant")
+                st.caption("Ask follow-up questions or request code rewrites based on the findings above.")
+                
+                # โชว์ประวัติแชท
+                for msg in st.session_state.chat_history:
+                    with st.chat_message(msg["role"]):
+                        st.markdown(msg["content"])
+                
+                # ช่องพิมพ์แชท
+                if prompt := st.chat_input("Ask AEGIS how to patch the critical issues..."):
+                    st.session_state.chat_history.append({"role": "user", "content": prompt})
+                    with st.chat_message("user"):
+                        st.markdown(prompt)
+                        
+                    with st.chat_message("assistant"):
+                        with st.spinner("Analyzing your request..."):
+                            reply = chat_with_consultant(prompt, payload, findings)
+                            st.markdown(reply)
+                    st.session_state.chat_history.append({"role": "assistant", "content": reply})
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+            # 🔒 โซน Paywall สำหรับคนยังไม่จ่าย
             else:
-                st.markdown(f"<div class='locked-content'>🔒 <b>{hidden_count} Critical Vulnerabilities Hidden</b><br>Upgrade to Enterprise to reveal exact locations and actionable remediation steps.</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='locked-content'>🔒 <b>{hidden_count} Critical Vulnerabilities Hidden</b><br>Upgrade to Enterprise to reveal exact locations and unlock the AI Consultant Module.</div>", unsafe_allow_html=True)
                 
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown("### 🔑 Enter Premium Passcode")
                 
-                # ✅ แก้ไขตรงนี้: เปลี่ยน placeholder ไม่ให้โชว์รหัสจริงแล้ว!
                 unlock_code = st.text_input("Enter the code from your Gumroad receipt:", placeholder="e.g., AEGIS-XXXX-XXXX", type="password")
                 
-                if st.button("🔓 UNLOCK REPORT"):
+                if st.button("🔓 UNLOCK REPORT & CHAT"):
                     if unlock_code == "NEXUS-AEGIS-V6-SECURE": 
                         st.session_state.unlocked = True
                         st.rerun() 
@@ -175,4 +232,4 @@ if st.session_state.scanned and st.session_state.result:
     else:
         st.success("✅ No critical vulnerabilities detected. Payload is clear.")
 
-st.markdown("<div class='custom-footer'>AEGIS v6.5 (Security Patch) | Enterprise Trust Layer | Secure E2EE Connection</div>", unsafe_allow_html=True)
+st.markdown("<div class='custom-footer'>AEGIS v7.0 (Interactive Consultant) | Enterprise Trust Layer</div>", unsafe_allow_html=True)

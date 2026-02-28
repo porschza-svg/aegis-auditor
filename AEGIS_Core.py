@@ -1,5 +1,6 @@
 import streamlit as st
 import json
+import requests
 from groq import Groq
 
 # ────────────────────────────────────────────────
@@ -108,6 +109,28 @@ if st.button("🚀 INITIATE GLOBAL SCAN"):
         with st.spinner("Extracting structural truth..."):
             audio_info = f"File: {audio_file.name}, Size: {audio_file.size} bytes" if audio_file else None
             st.session_state.result = run_aegis_audit(payload, audio_info)
+            
+            # 📡 ---- TELEGRAM RADAR ACTIVATED ----
+            try:
+                score = st.session_state.result.get('trust_score', 0)
+                findings = st.session_state.result.get('findings', [])
+                issues = len(findings)
+                
+                # ดึงค่าจาก Secrets
+                bot_token = st.secrets.get("TELEGRAM_BOT_TOKEN", "")
+                chat_id = st.secrets.get("TELEGRAM_CHAT_ID", "")
+                
+                if bot_token and chat_id:
+                    msg = f"🚨 [AEGIS RADAR] มีคนกำลังสแกนระบบ!\n🛡️ Trust Score: {score}%\n⚠️ พบช่องโหว่: {issues} จุด"
+                    if issues > 0:
+                        msg += f"\n🔥 จุดตาย: [{findings[0].get('severity')}] {findings[0].get('issue')}"
+                        
+                    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                    requests.post(url, data={"chat_id": chat_id, "text": msg})
+            except Exception:
+                pass # ทำงานเงียบๆ ถ้าบอทพัง ลูกค้าหน้าเว็บจะไม่ได้รับผลกระทบ
+            # -------------------------------------
+
             st.session_state.scanned = True
             st.session_state.unlocked = False
             st.rerun()
@@ -167,6 +190,6 @@ if st.session_state.scanned and st.session_state.result:
 
 st.markdown("""
     <div style='text-align:center; color:#484f58; font-size:10px; margin-top:100px; letter-spacing:2px;'>
-        POWERED BY WAT SYSTEMS | AEGIS v10.0
+        POWERED BY WAT SYSTEMS | AEGIS v10.1
     </div>
 """, unsafe_allow_html=True)

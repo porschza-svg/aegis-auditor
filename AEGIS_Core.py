@@ -1,7 +1,5 @@
 import streamlit as st
 import json
-import time
-import io
 from groq import Groq
 
 # ────────────────────────────────────────────────
@@ -54,7 +52,6 @@ def run_aegis_audit(payload, audio_meta=None):
             temperature=0.0,
             response_format={"type": "json_object"}
         )
-        # Clean JSON in case of formatting artifacts
         raw_content = response.choices[0].message.content.strip()
         return json.loads(raw_content)
     except Exception as e: 
@@ -63,8 +60,18 @@ def run_aegis_audit(payload, audio_meta=None):
 # ────────────────────────────────────────────────
 # 3. DASHBOARD ARCHITECTURE
 # ────────────────────────────────────────────────
-st.markdown("<div class='hero-container'><h1>AEGIS</h1><div class='brand-tag'>WAT SYSTEMS | UNIVERSAL LOGIC AUTHORITY</div></div>", unsafe_allow_html=True)
-st.markdown("<div style='text-align:center; color:#238636; font-size:10px; font-weight:800; letter-spacing:2px; margin-bottom:20px;'>● NEURAL LINK: ACTIVE</div>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='hero-container'>
+        <h1>AEGIS</h1>
+        <div class='brand-tag'>WAT SYSTEMS | UNIVERSAL LOGIC AUTHORITY</div>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <div style='text-align:center; color:#238636; font-size:10px; font-weight:800; letter-spacing:2px; margin-bottom:20px;'>
+        ● NEURAL LINK: ACTIVE
+    </div>
+""", unsafe_allow_html=True)
 
 # 🌐 SPECIALIST MATRIX
 col1, col2, col3 = st.columns(3)
@@ -79,12 +86,17 @@ with col3:
     with st.expander("⚖️ LEGAL ASSETS"): st.caption("Scan liability loops.")
 
 # 🛰️ AUDIO-NEURAL UPLINK
-st.markdown("<div class='uplink-box'>", unsafe_allow_html=True)
-st.markdown("<span style='color:#388bfd; font-size:12px; font-weight:800; letter-spacing:2px;'>🛰️ SOVEREIGN AUDIO UPLINK</span>", unsafe_allow_html=True)
+st.markdown("""
+    <div class='uplink-box'>
+        <span style='color:#388bfd; font-size:12px; font-weight:800; letter-spacing:2px;'>
+            🛰️ SOVEREIGN AUDIO UPLINK
+        </span>
+    </div>
+""", unsafe_allow_html=True)
+
 audio_file = st.file_uploader("Upload musical payload", type=['mp3', 'wav'], label_visibility="collapsed")
 if audio_file:
     st.success(f"Uplink Established: {audio_file.name}")
-st.markdown("</div>", unsafe_allow_html=True)
 
 # 📥 PAYLOAD INPUT
 payload = st.text_area("TARGET PAYLOAD:", height=250, placeholder="Paste assets or musical logic for deep-intelligence audit...")
@@ -106,7 +118,14 @@ if st.button("🚀 INITIATE GLOBAL SCAN"):
 if st.session_state.scanned and st.session_state.result:
     res = st.session_state.result
     st.markdown("---")
-    st.markdown(f"<div class='score-display'><h3>GLOBAL TRUST SCORE</h3><h1 style='font-size: 80px; color:#58a6ff; margin:0;'>{res.get('trust_score', 0)}%</h1><p style='color:#8b949e;'>Universal Logic Standard</p></div>", unsafe_allow_html=True)
+    
+    st.markdown(f"""
+        <div class='score-display'>
+            <h3>GLOBAL TRUST SCORE</h3>
+            <h1 style='font-size: 80px; color:#58a6ff; margin:0;'>{res.get('trust_score', 0)}%</h1>
+            <p style='color:#8b949e;'>Universal Logic Standard</p>
+        </div>
+    """, unsafe_allow_html=True)
     
     findings = res.get("findings", [])
     if findings:
@@ -114,9 +133,20 @@ if st.session_state.scanned and st.session_state.result:
         st.error(f"**[{findings[0].get('severity')}]:** {findings[0].get('issue')}\n\n*Fix: {findings[0].get('remediation')}*")
         
         if not st.session_state.unlocked:
-            st.markdown(f"<div class='locked-card'>🔒 <b>{len(findings)-1} ADDITIONAL LOGIC GAPS DETECTED</b><br>Upgrade for full Matrix access.</div>", unsafe_allow_html=True)
-            # ลิงก์แก้ไขให้คลีนแล้ว: ไม่มีวงเล็บหรือ Markdown ซ้อนทับใน HTML
-            st.markdown(f"<div style='text-align:center; margin-top:15px;'><a href='https://porschza.gumroad.com/l/AEGIS' target='_blank' style='color:#e3b341; text-decoration:none; font-weight:800;'>👉 SECURE ENTERPRISE PASS ($9)</a></div>", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class='locked-card'>
+                    🔒 <b>{len(findings)-1} ADDITIONAL LOGIC GAPS DETECTED</b><br>
+                    Upgrade for full Matrix access.
+                </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+                <div style='text-align:center; margin-top:15px;'>
+                    <a href='https://porschza.gumroad.com/l/AEGIS' target='_blank' style='color:#e3b341; text-decoration:none; font-weight:800;'>
+                        👉 SECURE ENTERPRISE PASS ($9)
+                    </a>
+                </div>
+            """, unsafe_allow_html=True)
             
             passcode = st.text_input("ENTER PASSCODE:", type="password")
             if st.button("🔓 VERIFY"):
@@ -135,4 +165,8 @@ if st.session_state.scanned and st.session_state.result:
         st.session_state.result = None
         st.rerun()
 
-st.markdown("<div style='text-align:center; color:#484f58; font-size:10px; margin-top:100px; letter-spacing:2px;'>POWERED BY WAT SYSTEMS | AEGIS v10.0</div>", unsafe_allow_html=True)
+st.markdown("""
+    <div style='text-align:center; color:#484f58; font-size:10px; margin-top:100px; letter-spacing:2px;'>
+        POWERED BY WAT SYSTEMS | AEGIS v10.0
+    </div>
+""", unsafe_allow_html=True)

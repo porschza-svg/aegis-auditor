@@ -115,7 +115,7 @@ if st.session_state.scanned and st.session_state.result:
         
         if not st.session_state.unlocked:
             st.markdown(f"<div class='locked-card'>🔒 <b>{len(findings)-1} ADDITIONAL LOGIC GAPS DETECTED</b><br>Upgrade for full Matrix access.</div>", unsafe_allow_html=True)
-            st.markdown(f"<div style='text-align:center; margin-top:15px;'><a href='[https://porschza.gumroad.com/l/AEGIS](https://porschza.gumroad.com/l/AEGIS)' target='_blank' style='color:#e3b341; text-decoration:none; font-weight:800;'>👉 SECURE ENTERPRISE PASS ($9)</a></div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align:center; margin-top:15px;'><a href='https://porschza.gumroad.com/l/AEGIS' target='_blank' style='color:#e3b341; text-decoration:none; font-weight:800;'>👉 SECURE ENTERPRISE PASS ($9)</a></div>", unsafe_allow_html=True)
             
             passcode = st.text_input("ENTER PASSCODE:", type="password")
             if st.button("🔓 VERIFY"):
@@ -135,3 +135,4 @@ if st.session_state.scanned and st.session_state.result:
         st.rerun()
 
 st.markdown("<div style='text-align:center; color:#484f58; font-size:10px; margin-top:100px; letter-spacing:2px;'>POWERED BY WAT SYSTEMS | AEGIS v10.0</div>", unsafe_allow_html=True)
+

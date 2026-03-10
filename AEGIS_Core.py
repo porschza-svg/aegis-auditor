@@ -2,7 +2,10 @@ import streamlit as st
 import json
 from groq import Groq
 
-st.set_page_config(page_title="AEGIS v12.0 – Instant Security Scanner", layout="wide", page_icon="🛡️")
+# ────────────────────────────────────────────────
+# CONFIG & ULTRA-PREMIUM STYLING (v13.0: Powerful, Clean, Global)
+# ────────────────────────────────────────────────
+st.set_page_config(page_title="AEGIS v13.0 – Universal Logic Authority", layout="wide", page_icon="🛡️")
 
 st.markdown("""
     <style>
@@ -17,11 +20,20 @@ st.markdown("""
     .score { font-size: 140px; font-weight: 900; color: #00d4ff; text-shadow: 0 0 30px #00d4ff; margin: 0; }
     .paywall { background: rgba(255,0,0,0.1); border: 2px dashed #ff0000; padding: 50px; border-radius: 16px; text-align: center; margin: 50px auto; max-width: 900px; }
     .footer { text-align: center; color: #00d4ff; opacity: 0.6; font-size: 12px; margin-top: 100px; letter-spacing: 4px; }
+    .demo-box { background: rgba(0,0,0,0.5); border: 1px dashed #00d4ff; padding: 30px; border-radius: 12px; margin: 30px 0; text-align: center; }
     </style>
 """, unsafe_allow_html=True)
 
 st.markdown("<h1>AEGIS</h1>", unsafe_allow_html=True)
 st.markdown("<div class='tag'>WAT SYSTEMS | UNIVERSAL LOGIC AUTHORITY</div>", unsafe_allow_html=True)
+
+# Demo on first load
+st.subheader("Example Scan Result")
+st.markdown("<div class='demo-box'>", unsafe_allow_html=True)
+st.markdown("<div class='score'>42/100</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#ff0000; font-size:2rem; margin:20px 0;'>Detected 3 Critical Issues</div>", unsafe_allow_html=True)
+st.markdown("<p style='color:#8b949e; font-size:1.2rem;'>Multiple critical vulnerabilities detected.</p>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
 payload = st.text_area("", height=200, placeholder="Paste code or contract here...")
 

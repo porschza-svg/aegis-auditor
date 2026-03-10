@@ -5,7 +5,7 @@ import urllib.parse
 import time
 
 # ────────────────────────────────────────────────
-# 1. SOVEREIGN INDUSTRIAL UI (PREMIUM AUTHORITY)
+# 1. INDUSTRIAL AUTHORITY UI SYSTEM
 # ────────────────────────────────────────────────
 st.set_page_config(
     page_title="AEGIS | WAT SYSTEMS", 
@@ -18,41 +18,72 @@ if 'scanned' not in st.session_state: st.session_state.scanned = False
 if 'result' not in st.session_state: st.session_state.result = None
 if 'unlocked' not in st.session_state: st.session_state.unlocked = False
 
-# High-Contrast Industrial Styling
+# Professional Industrial Styling (Strict Grayscale & High Contrast)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap');
     
     [data-testid="stHeader"], #MainMenu, footer {visibility: hidden;}
-    .main { background-color: #050505; color: #e6edf3; font-family: 'Inter', sans-serif; }
-
-    /* Header: Authority Branding */
-    .header-box { border-left: 4px solid #58a6ff; padding-left: 20px; margin: 50px 0; }
-    .logo-main { font-weight: 900; font-size: 2.5rem; letter-spacing: -1px; color: #ffffff; margin: 0; }
-    .logo-sub { font-size: 10px; font-weight: 700; color: #8b949e; letter-spacing: 5px; text-transform: uppercase; }
-
-    /* Matrix Pillars */
-    .pillar-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; }
-    .pillar-box { background: #0d1117; border: 1px solid #30363d; padding: 15px; border-radius: 4px; text-align: center; }
-    .pillar-id { font-size: 8px; font-weight: 900; color: #58a6ff; text-transform: uppercase; display: block; }
-    .pillar-name { font-size: 11px; font-weight: 700; color: #f0f6fc; }
-
-    /* Input: Industrial Terminal */
-    .stTextArea textarea { 
-        background-color: #000000 !important; 
-        border: 1px solid #30363d !important; 
-        border-radius: 8px !important; 
-        color: #3fb950 !important; 
-        font-family: 'JetBrains Mono', monospace !important;
-        font-size: 14px !important;
-        padding: 20px !important;
-        line-height: 1.6;
+    
+    .main { 
+        background-color: #0d1117; 
+        color: #e6edf3; 
+        font-family: 'Inter', sans-serif; 
     }
 
-    /* Execution Button */
+    /* Sovereign Brand Header */
+    .header-box { 
+        border-bottom: 2px solid #30363d; 
+        padding-bottom: 30px; 
+        margin-bottom: 50px; 
+        margin-top: 40px; 
+    }
+    .logo-main { 
+        font-weight: 900; 
+        font-size: 2.5rem; 
+        letter-spacing: -1px; 
+        color: #ffffff; 
+        margin: 0; 
+        line-height: 1;
+    }
+    .logo-sub { 
+        font-size: 10px; 
+        font-weight: 700; 
+        color: #8b949e; 
+        letter-spacing: 5px; 
+        text-transform: uppercase; 
+        margin-top: 8px;
+    }
+
+    /* Industrial Pillars Matrix */
+    .pillar-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+    .pillar-item { 
+        background: #161b22; 
+        border: 1px solid #30363d; 
+        padding: 15px; 
+        border-radius: 4px; 
+        text-align: center;
+    }
+    .p-tag { font-size: 8px; font-weight: 900; color: #58a6ff; display: block; margin-bottom: 4px; }
+    .p-name { font-size: 11px; font-weight: 700; color: #f0f6fc; text-transform: uppercase; }
+
+    /* The Terminal Interface */
+    .stTextArea textarea { 
+        background-color: #010409 !important; 
+        border: 1px solid #30363d !important; 
+        border-radius: 4px !important; 
+        color: #e6edf3 !important; 
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 14px !important;
+        padding: 25px !important;
+        line-height: 1.6;
+    }
+    .stTextArea textarea:focus { border-color: #58a6ff !important; }
+
+    /* Action Button: Executioner Style */
     div.stButton > button {
-        background: #ffffff !important;
-        color: #000000 !important;
+        background: #f0f6fc !important;
+        color: #0d1117 !important;
         font-weight: 900 !important;
         border-radius: 4px !important;
         padding: 20px 0 !important;
@@ -60,37 +91,50 @@ st.markdown("""
         border: none !important;
         text-transform: uppercase !important;
         letter-spacing: 3px !important;
-        transition: 0.3s all ease;
+        transition: 0.2s all;
     }
-    div.stButton > button:hover { background: #58a6ff !important; color: #ffffff !important; transform: scale(1.01); }
+    div.stButton > button:hover { background: #58a6ff !important; color: #ffffff !important; }
 
-    /* Result Displays */
-    .result-aura { background: #0d1117; border: 1px solid #30363d; padding: 50px; border-radius: 8px; margin-top: 50px; }
+    /* Result Architecture */
+    .result-frame { 
+        background: #0d1117; 
+        border: 1px solid #30363d; 
+        padding: 50px; 
+        margin-top: 50px; 
+        border-radius: 4px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
     .score-label { font-size: 11px; font-weight: 800; color: #8b949e; letter-spacing: 3px; }
-    .score-value { font-size: 90px; font-weight: 900; color: #ffffff; line-height: 1; margin: 10px 0; letter-spacing: -4px; }
+    .score-value { font-size: 96px; font-weight: 900; color: #ffffff; line-height: 1; margin: 15px 0; }
     
-    .flaw-frame { border: 1px solid rgba(248, 81, 73, 0.3); border-left: 6px solid #f85149; padding: 30px; border-radius: 4px; margin-top: 30px; background: rgba(248,81,73,0.02); }
-    .flaw-title { color: #f85149; font-weight: 900; font-size: 18px; text-transform: uppercase; margin-bottom: 15px; }
-    
-    .cure-zone { background: #000000; border: 1px solid #e3b341; padding: 40px; border-radius: 8px; text-align: center; margin-top: 40px; }
+    .flaw-box { 
+        background: rgba(248, 81, 73, 0.03); 
+        border: 1px solid rgba(248, 81, 73, 0.2); 
+        border-left: 5px solid #f85149; 
+        padding: 30px; 
+        margin-top: 30px;
+    }
+    .flaw-head { color: #f85149; font-weight: 900; font-size: 13px; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase; }
+    .flaw-impact { font-size: 16px; font-weight: 600; color: #f0f6fc; line-height: 1.6; }
+
+    .locked-area { background: #161b22; border: 1px solid #e3b341; padding: 40px; text-align: center; margin-top: 30px; }
     </style>
 """, unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────
-# 2. TELEGRAM RADAR (SUPREME PRIORITY)
+# 2. TELEGRAM RADAR (PRIORITY UPLINK)
 # ────────────────────────────────────────────────
-def trigger_radar_alert(score, status, detail):
+def broadcast_radar(score, flaw, status="ACTIVE"):
     try:
-        # ดึงค่าจาก Secrets โดยตรง
         token = st.secrets.get("TELEGRAM_BOT_TOKEN", "")
         chat_id = st.secrets.get("TELEGRAM_CHAT_ID", "")
         if token and chat_id:
             msg = (
-                f"🛡️ *[AEGIS AUTHORITY RADAR]*\n\n"
+                f"🛡️ *[AEGIS RADAR]*\n\n"
                 f"● *STATUS:* {status}\n"
                 f"● *SCORE:* {score}%\n"
-                f"● *IDENTIFIED:* {detail}\n\n"
-                f"📡 _Operational Link: WAT SYSTEMS_"
+                f"● *ISSUE:* {flaw}\n\n"
+                f"📡 _Authority: WAT SYSTEMS_"
             )
             requests.post(f"https://api.telegram.org/bot{token}/sendMessage", 
                           data={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"}, 
@@ -98,63 +142,74 @@ def trigger_radar_alert(score, status, detail):
     except: pass
 
 # ────────────────────────────────────────────────
-# 3. SUPREME AUDIT ENGINE (PRECISION LOGIC)
+# 3. SUPREME LOGIC ENGINE (STABLE & PRECISE)
 # ────────────────────────────────────────────────
 def run_aegis_audit(payload):
-    # รองรับทั้งสองชื่อเพื่อความยืดหยุ่นของสถาปนิก
+    # ยิง Telegram ทันทีที่เริ่มงาน
+    broadcast_radar(0, "ANALYSIS_INITIATED", "UPLINKING")
+    
+    # ดึง Key ทุกรูปแบบที่เป็นไปได้เพื่อป้องกันความผิดพลาดของสถาปนิก
     api_key = st.secrets.get("OPENROUTER_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY")
     
     if not api_key:
-        trigger_radar_alert(0, "SYSTEM_FAILURE", "Missing API Key")
-        return {"trust_score": 0, "findings": [{"issue": "SECRET_MISSING", "catastrophic_impact": "Uplink severed. Auditor is blind.", "the_cure": "Check Streamlit Secrets for OPENROUTER_API_KEY."}]}
+        return {"trust_score": 0, "findings": [{"issue": "UPLINK SEVERED", "catastrophic_impact": "Missing API Key in Secrets.", "the_cure": "Set OPENROUTER_API_KEY."}]}
 
     try:
-        # ใช้เครื่องยนต์ฟรีที่แรงที่สุด (Gemini 2.0 Flash) เพื่อความเป็น "พรีเมี่ยม"
-        target_model = "google/gemini-2.0-flash-001:free"
+        # ใช้โมเดลที่เสถียรกว่า Llama 3.1 ในช่วง Free Tier ของ OpenRouter
+        # google/gemini-flash-1.5 เป็นรุ่นที่พรีเมี่ยมที่สุดที่ยังเสถียรในโหมดฟรี
+        target_model = "google/gemini-flash-1.5"
         
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "HTTP-Referer": "https://aegis.watsystems.tech",
-                "X-Title": "AEGIS v15.0",
+                "X-Title": "AEGIS Industrial Standard",
                 "Content-Type": "application/json"
             },
             data=json.dumps({
                 "model": target_model,
                 "messages": [
-                    {"role": "system", "content": "You are AEGIS, the supreme Logic Auditor. Analyze strictly. Output JSON ONLY: {\"trust_score\": int, \"strengths\": [\"str\"], \"findings\": [{\"issue\": \"str\", \"catastrophic_impact\": \"str\", \"the_cure\": \"str\"}]}"},
-                    {"role": "user", "content": f"AUDIT_TARGET:\n{payload[:12000]}"}
+                    {
+                        "role": "system", 
+                        "content": "You are AEGIS, a professional Industrial Logic Auditor. Analyze strictly. Output JSON ONLY: {\"trust_score\": int, \"strengths\": [\"str\"], \"findings\": [{\"issue\": \"str\", \"catastrophic_impact\": \"str\", \"the_cure\": \"str\"}]}"
+                    },
+                    {"role": "user", "content": f"AUDIT_TARGET:\n{payload[:15000]}"}
                 ],
                 "temperature": 0.0,
                 "response_format": {"type": "json_object"}
             }),
-            timeout=45
+            timeout=40
         )
         
-        # ตรวจสอบสถานะการเชื่อมต่อทันที
+        # ตรวจสอบ API Response อย่างละเอียด
         if response.status_code != 200:
-            err_data = response.json()
-            err_msg = err_data.get("error", {}).get("message", "Uplink Denied")
-            raise Exception(f"API_REJECTION: {err_msg}")
+            err_msg = response.json().get('error', {}).get('message', 'Uplink Refused')
+            raise Exception(f"API_ERROR: {err_msg}")
             
         result = response.json()
+        
+        # 🚨 FIX: ป้องกันปัญหา KeyError 'choices'
+        if "choices" not in result:
+            err_info = result.get('error', {}).get('message', str(result))
+            raise Exception(f"INVALID_DATA: {err_info}")
+            
         raw_content = result['choices'][0]['message']['content'].strip()
-        audit_data = json.loads(raw_content)
+        data = json.loads(raw_content)
         
-        # ส่ง Radar ทันทีที่การวิเคราะห์สำเร็จ
-        trigger_radar_alert(audit_data.get('trust_score', 0), "AUDIT_SUCCESS", audit_data['findings'][0]['issue'])
+        # ส่ง Radar สรุปผล
+        broadcast_radar(data.get('trust_score', 0), data['findings'][0]['issue'], "COMPLETE")
         
-        return audit_data
+        return data
         
     except Exception as e:
-        trigger_radar_alert(0, "CORE_UPLINK_ERROR", str(e)[:100])
+        broadcast_radar(0, str(e)[:50], "FAILURE")
         return {
             "trust_score": 0, 
             "findings": [{
-                "issue": "CORE UPLINK SEVERED", 
+                "issue": "CORE ERROR", 
                 "catastrophic_impact": str(e), 
-                "the_cure": "Ensure API Key is valid and model 'google/gemini-2.0-flash-001:free' is accessible."
+                "the_cure": "Check API Credits or Endpoint Availability."
             }]
         }
 
@@ -168,22 +223,22 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Pillar Grid
+# Status Matrix Pillars
 st.markdown("""
     <div class='pillar-row'>
-        <div class='pillar-box'><span class='pillar-id'>AUDIT-01</span><span class='pillar-name'>CODE SECURITY</span></div>
-        <div class='pillar-box'><span class='pillar-id'>AUDIT-02</span><span class='pillar-name'>WORKFLOW</span></div>
-        <div class='pillar-box'><span class='pillar-id'>AUDIT-03</span><span class='pillar-name'>CONTRACTS</span></div>
+        <div class='pillar-item'><span class='p-tag'>MOD-01</span><span class='p-name'>CODE SECURITY</span></div>
+        <div class='pillar-item'><span class='p-tag'>MOD-02</span><span class='p-name'>WORKFLOW</span></div>
+        <div class='pillar-item'><span class='p-tag'>MOD-03</span><span class='p-name'>CONTRACTS</span></div>
     </div>
 """, unsafe_allow_html=True)
 
-payload = st.text_area("TARGET PAYLOAD:", height=320, placeholder="/// INITIATE UPLINK BY PASTING ARCHITECTURAL DATA")
+payload = st.text_area("TARGET PAYLOAD FOR DISSECTION:", height=300, placeholder="/// PASTE ARCHITECTURAL DATA FOR AUDIT")
 
-if st.button("EXECUTE SUPREME AUDIT"):
+if st.button("RUN GLOBAL AUDIT"):
     if not payload.strip():
-        st.error("ERROR: SYSTEM REQUIRES DATA PAYLOAD.")
+        st.error("ERROR: Null payload.")
     else:
-        with st.spinner("Decoding structural integrity..."):
+        with st.spinner("Decoding structural DNA..."):
             st.session_state.result = run_aegis_audit(payload)
             st.session_state.scanned = True
             st.session_state.unlocked = False
@@ -196,44 +251,47 @@ if st.session_state.scanned and st.session_state.result:
     res = st.session_state.result
     score = res.get('trust_score', 0)
     
-    st.markdown("<div class='result-aura'>", unsafe_allow_html=True)
+    st.markdown("<div class='result-frame'>", unsafe_allow_html=True)
     st.markdown(f"<div class='score-label'>GLOBAL LOGIC SCORE</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='score-value'>{score}%</div>", unsafe_allow_html=True)
-    st.markdown("<div style='background:#58a6ff; color:#000000; display:inline-block; padding:3px 10px; border-radius:2px; font-size:10px; font-weight:900;'>AUTHENTICATED BY WAT SYSTEMS</div>", unsafe_allow_html=True)
+    st.markdown("<div style='background:#58a6ff; color:#000; padding:2px 10px; font-size:9px; font-weight:900;'>VALIDATED BY WAT SYSTEMS</div>", unsafe_allow_html=True)
     
     findings = res.get("findings", [])
     if findings:
         f = findings[0]
         st.markdown(f"""
-            <div class='flaw-frame'>
-                <div class='flaw-title'>⚠️ {f.get('issue')}</div>
-                <div style='color: #8b949e; font-size: 11px; font-weight: 800; margin-bottom: 8px; text-transform: uppercase;'>Catastrophic Impact:</div>
-                <div style='font-style: italic; line-height: 1.6; color: #e6edf3;'>"{f.get('catastrophic_impact')}"</div>
+            <div class='flaw-box'>
+                <div class='flaw-head'>● FATAL FLAW DETECTED</div>
+                <div class='flaw-impact'>{f.get('issue')}</div>
+                <div style='margin-top:20px; font-size:12px; opacity:0.6; line-height:1.6;'>
+                    <b>IMPACT:</b><br>{f.get('catastrophic_impact')}
+                </div>
             </div>
         """, unsafe_allow_html=True)
         
         st.write("")
-        st.link_button("BROADCAST RESULTS ON X", f"https://twitter.com/intent/tweet?text=Logic Authority Scanned. Score: {score}%. 🛡️ Verified by WAT SYSTEMS.", use_container_width=True)
+        st.link_button("BROADCAST AUTHORITY ON X", f"https://twitter.com/intent/tweet?text=Logic Authority Score: {score}%. 🛡️ Tested at AEGIS.", use_container_width=True)
 
-        # Paywall
+        # Paywall Path
         if not st.session_state.unlocked:
             st.markdown("""
-                <div class='cure-zone'>
-                    <div style='color:#e3b341; font-weight:900; font-size:11px; letter-spacing:4px; margin-bottom:15px;'>REMEDIATION ENCRYPTED</div>
-                    <div style='color:#8b949e; font-size:12px; margin-bottom:25px;'>Remediation code is restricted to Sovereign Enterprise holders.</div>
+                <div class='locked-area'>
+                    <div style='color:#e3b341; font-weight:900; font-size:10px; letter-spacing:3px; margin-bottom:15px;'>REMEDIATION RESTRICTED</div>
+                    <div style='color:#8b949e; font-size:12px; margin-bottom:25px;'>Enterprise pass required to decrypt the technical solution.</div>
                 </div>
             """, unsafe_allow_html=True)
             
-            st.link_button("SECURE SOVEREIGN PASS ($9)", "https://porschza.gumroad.com/l/AEGIS", type="primary", use_container_width=True)
+            st.link_button("SECURE ENTERPRISE PASS ($9)", "https://porschza.gumroad.com/l/AEGIS", type="primary", use_container_width=True)
             
             passcode = st.text_input("ACCESS PASSCODE:", type="password")
             if st.button("🔓 DECRYPT SOLUTION"):
                 if passcode == st.secrets.get("AEGIS_PASSCODE", "1234"):
                     st.session_state.unlocked = True
                     st.rerun()
-                else: st.error("ACCESS DENIED.")
+                else: st.error("Access Denied.")
         else:
-            st.success("✅ SOVEREIGN ACCESS GRANTED")
+            st.success("✅ ACCESS GRANTED")
+            st.markdown("### 🔵 TECHNICAL SOLUTION")
             st.code(f.get('the_cure'), language='python')
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -243,4 +301,4 @@ if st.session_state.scanned and st.session_state.result:
         st.session_state.result = None
         st.rerun()
 
-st.markdown("<div style='text-align:center; color:#222222; font-size:9px; margin-top:100px; font-weight:700; letter-spacing:5px;'>WAT SYSTEMS | AEGIS v15.0 | SOVEREIGN AUTHORITY</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center; color:#30363d; font-size:9px; margin-top:100px; font-weight:700; letter-spacing:5px;'>WAT SYSTEMS | AEGIS v17.0 | INDUSTRIAL AUTHORITY</div>", unsafe_allow_html=True)

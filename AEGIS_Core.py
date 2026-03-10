@@ -2,9 +2,10 @@ import streamlit as st
 import json
 import requests
 import urllib.parse
+import time
 
 # ────────────────────────────────────────────────
-# 1. INDUSTRIAL UI SYSTEM (STARK MINIMALISM)
+# 1. SOVEREIGN UI ARCHITECTURE (PREMIUM MINIMALISM)
 # ────────────────────────────────────────────────
 st.set_page_config(
     page_title="AEGIS | WAT SYSTEMS", 
@@ -12,202 +13,284 @@ st.set_page_config(
     page_icon="🛡️"
 )
 
-# Initialize Session States
+# Initialize Session States for Persistence
 if 'scanned' not in st.session_state: st.session_state.scanned = False
 if 'result' not in st.session_state: st.session_state.result = None
 if 'unlocked' not in st.session_state: st.session_state.unlocked = False
 
+# Global CSS: Clean, High-Contrast, Professional
 st.markdown("""
     <style>
-    /* Industrial Authority Reset */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+
     [data-testid="stHeader"], #MainMenu, footer {visibility: hidden;}
-    .main { background-color: #ffffff; color: #111111; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     
-    /* Header Authority */
-    .header-box { border-bottom: 2px solid #111111; padding-bottom: 20px; margin-bottom: 50px; margin-top: 30px; }
-    .logo { font-size: 32px; font-weight: 900; letter-spacing: 2px; color: #111111; }
-    .sub-logo { font-size: 10px; font-weight: 700; color: #666666; letter-spacing: 3px; margin-top: -5px; }
+    .main { 
+        background-color: #0d1117; 
+        color: #c9d1d9; 
+        font-family: 'Inter', sans-serif; 
+    }
 
-    /* Pillar Modules */
-    .pillar-container { display: flex; gap: 10px; margin-bottom: 30px; }
-    .pillar-module { flex: 1; border: 1px solid #eeeeee; padding: 15px; border-radius: 4px; background: #fafafa; }
-    .pillar-label { font-size: 10px; font-weight: 800; color: #999999; letter-spacing: 1px; }
-    .pillar-status { font-size: 12px; font-weight: 700; color: #111111; margin-top: 5px; }
+    /* Brand Header: The Sovereign Look */
+    .header-container { text-align: left; border-left: 3px solid #58a6ff; padding-left: 20px; margin: 40px 0; }
+    .brand-name { font-weight: 900; font-size: 2.2rem; letter-spacing: -1px; color: #ffffff; margin-bottom: 0; }
+    .brand-motto { font-size: 10px; font-weight: 700; color: #8b949e; letter-spacing: 4px; text-transform: uppercase; }
 
-    /* Terminal Interface */
+    /* Matrix Status Indicators */
+    .pillar-row { display: flex; gap: 12px; margin-bottom: 30px; }
+    .pillar-item { 
+        flex: 1; 
+        background: #161b22; 
+        border: 1px solid #30363d; 
+        padding: 12px; 
+        border-radius: 6px; 
+        text-align: center;
+    }
+    .pillar-id { font-size: 8px; font-weight: 800; color: #58a6ff; display: block; }
+    .pillar-name { font-size: 11px; font-weight: 600; color: #f0f6fc; }
+
+    /* Input Terminal */
     .stTextArea textarea { 
-        border: 2px solid #111111 !important; 
-        border-radius: 0px !important; 
-        background: #ffffff !important; 
-        color: #111111 !important; 
-        font-family: "SF Mono", "Monaco", "Inconsolata", monospace !important;
+        background-color: #010409 !important; 
+        border: 1px solid #30363d !important; 
+        border-radius: 8px !important; 
+        color: #e6edf3 !important; 
+        font-family: 'SF Mono', 'Fira Code', monospace !important;
         font-size: 14px !important;
         padding: 20px !important;
+        line-height: 1.6;
     }
 
-    /* Result Blocks */
-    .result-block { border: 2px solid #111111; padding: 40px; margin-top: 50px; background: #ffffff; }
-    .score-label { font-size: 12px; font-weight: 800; letter-spacing: 2px; color: #666666; }
-    .score-val { font-size: 72px; font-weight: 900; color: #111111; margin: 0; }
-    
-    .flaw-alert { background: #111111; color: #ffffff; padding: 30px; margin-top: 30px; }
-    .flaw-head { font-size: 10px; font-weight: 800; color: #ff4b4b; letter-spacing: 2px; margin-bottom: 10px; }
-    .flaw-body { font-size: 18px; font-weight: 700; line-height: 1.4; }
-
-    /* The Cure Paywall */
-    .cure-locked { border: 2px dashed #cccccc; padding: 40px; text-align: center; margin-top: 30px; }
-    .cure-unlocked { border: 2px solid #238636; padding: 30px; background: #f0fff4; margin-top: 30px; }
-
-    /* Primary Buttons */
+    /* Action Button: Premium Heavyweight */
     div.stButton > button {
-        border-radius: 0px !important;
-        background: #111111 !important;
+        background: #238636 !important;
         color: #ffffff !important;
         font-weight: 700 !important;
-        border: none !important;
+        border-radius: 6px !important;
+        padding: 18px 0 !important;
         width: 100% !important;
-        padding: 20px !important;
+        border: none !important;
         text-transform: uppercase !important;
         letter-spacing: 2px !important;
+        transition: 0.2s all;
     }
-    div.stButton > button:hover { background: #333333 !important; }
+    div.stButton > button:hover { background: #2ea043 !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(35,134,54,0.3); }
 
-    /* Dark Mode Support (Force Light for Industrial Feel) */
-    @media (prefers-color-scheme: dark) {
-        .main { background-color: #0d1117; color: #c9d1d9; }
-        .header-box { border-bottom-color: #30363d; }
-        .logo { color: #f0f6fc; }
-        .pillar-module { background: #161b22; border-color: #30363d; }
-        .pillar-status { color: #f0f6fc; }
-        .stTextArea textarea { background: #0d1117 !important; border-color: #30363d !important; color: #c9d1d9 !important; }
-        .result-block { background: #0d1117; border-color: #30363d; }
-        .score-val { color: #f0f6fc; }
+    /* Result Aesthetics */
+    .result-card { 
+        background: #0d1117; 
+        border: 1px solid #30363d; 
+        border-radius: 12px; 
+        padding: 40px; 
+        margin-top: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .score-label { font-size: 11px; font-weight: 800; color: #8b949e; letter-spacing: 2px; }
+    .score-value { font-size: 84px; font-weight: 900; color: #ffffff; line-height: 1; margin: 10px 0; }
+    
+    .alert-box { 
+        background: rgba(248, 81, 73, 0.1); 
+        border-left: 4px solid #f85149; 
+        padding: 24px; 
+        border-radius: 0 8px 8px 0;
+        margin-top: 25px;
+    }
+    .alert-title { color: #f85149; font-weight: 800; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; }
+    .alert-body { font-size: 16px; font-weight: 600; color: #f0f6fc; line-height: 1.5; }
+
+    /* Paywall: Exclusive Look */
+    .paywall-container { 
+        background: #161b22; 
+        border: 1px solid #e3b341; 
+        padding: 30px; 
+        border-radius: 8px; 
+        text-align: center;
+        margin-top: 30px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────
-# 2. AUDIT ENGINE (CLAUDE 3.5 VIA OPENROUTER)
+# 2. TELEGRAM RADAR (NOTIFICATIONS)
+# ────────────────────────────────────────────────
+def send_telegram_alert(score, issue):
+    try:
+        token = st.secrets.get("TELEGRAM_BOT_TOKEN", "")
+        chat_id = st.secrets.get("TELEGRAM_CHAT_ID", "")
+        if token and chat_id:
+            message = (
+                f"🚨 *[AEGIS RADAR ALERT]*\n\n"
+                f"● *Status:* Audit Complete\n"
+                f"● *Logic Score:* {score}%\n"
+                f"● *Primary Flaw:* {issue}\n\n"
+                f"🛡️ _Authenticated by WAT SYSTEMS_"
+            )
+            url = f"https://api.telegram.org/bot{token}/sendMessage"
+            requests.post(url, data={"chat_id": chat_id, "text": message, "parse_mode": "Markdown"})
+    except: pass
+
+# ────────────────────────────────────────────────
+# 3. PRECISE AUDIT ENGINE (CLAUDE 3.5 / LLAMA)
 # ────────────────────────────────────────────────
 def run_aegis_audit(payload):
     try:
         api_key = st.secrets.get("ANTHROPIC_API_KEY", "")
-        if not api_key: raise Exception("API Key Missing.")
+        if not api_key: raise Exception("SYSTEM_SECRET_ERROR: API_KEY_NOT_FOUND")
         
-        # ใช้ Claude 3.5 Sonnet ของจริง (ถ้าเงินไม่พอ ระบบจะสลับไปโมเดลฟรีให้เองในตัวแปรนี้)
-        target_model = "anthropic/claude-3.5-sonnet" 
+        # สำหรับโหมด "ฟรีเมี่ยม": เราใช้โมเดลรุ่นฟรีแต่ประมวลผลด้วยตรรกะระดับสูง
+        target_model = "meta-llama/llama-3.1-8b-instruct:free"
         
-        response = requests.post(
-            url="https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "HTTP-Referer": "https://aegis-auditor.streamlit.app",
-                "X-Title": "AEGIS Industrial Audit",
-            },
-            data=json.dumps({
-                "model": target_model,
-                "messages": [
-                    {"role": "system", "content": "You are AEGIS, a professional Industrial Auditor. Analyze the input for logic flaws. Be cold, factual, and direct. Output valid JSON: {\"trust_score\": int, \"strengths\": [\"str\"], \"findings\": [{\"issue\": \"str\", \"severity\": \"Critical\", \"catastrophic_impact\": \"str\", \"the_cure\": \"str\"}]}"},
-                    {"role": "user", "content": f"PAYLOAD FOR AUDIT:\n{payload[:15000]}"}
-                ],
-                "temperature": 0.0,
-                "response_format": {"type": "json_object"}
-            })
-        )
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "HTTP-Referer": "https://aegis.watsystems.tech",
+            "X-Title": "AEGIS Sovereign Audit",
+        }
         
+        data = {
+            "model": target_model,
+            "messages": [
+                {
+                    "role": "system", 
+                    "content": (
+                        "You are AEGIS, the supreme Logic Auditor by WAT SYSTEMS. "
+                        "Identify the SINGLE most dangerous logic flaw. Be cold, expert, and brutal. "
+                        "Output ONLY a valid JSON object: "
+                        "{\"trust_score\": int, \"strengths\": [\"str\"], \"findings\": [{\"issue\": \"str\", \"catastrophic_impact\": \"str\", \"the_cure\": \"str\"}]}"
+                    )
+                },
+                {"role": "user", "content": f"PAYLOAD TO DISSECT:\n{payload[:10000]}"}
+            ],
+            "temperature": 0.0,
+            "response_format": {"type": "json_object"}
+        }
+        
+        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data, timeout=45)
+        
+        # Error Handling เชิงลึก
+        if response.status_code != 200:
+            error_data = response.json()
+            error_msg = error_data.get("error", {}).get("message", "Uplink Failed")
+            raise Exception(f"API_REJECTION: {error_msg}")
+            
         result = response.json()
-        raw_content = result['choices'][0]['message']['content'].strip()
-        return json.loads(raw_content)
+        
+        if "choices" not in result:
+            raise Exception("UNEXPECTED_RESPONSE: No analysis choices returned.")
+            
+        content = result['choices'][0]['message']['content'].strip()
+        
+        # Clean potential markdown wrap
+        if content.startswith("```"):
+            content = content.split("```")[1]
+            if content.startswith("json"): content = content[4:]
+            content = content.split("```")[0].strip()
+            
+        return json.loads(content)
+        
     except Exception as e:
-        # Fallback to Llama Free if credit error occurs to keep app running
-        return {"trust_score": 0, "findings": [{"issue": "UPLINK ERROR", "severity": "CRITICAL", "catastrophic_impact": str(e), "the_cure": "Check API Credentials."}]}
+        return {
+            "trust_score": 0, 
+            "findings": [{
+                "issue": "CORE UPLINK ERROR", 
+                "catastrophic_impact": str(e), 
+                "the_cure": "Ensure API Credits are active and Secrets are configured."
+            }]
+        }
 
 # ────────────────────────────────────────────────
-# 3. INTERFACE ARCHITECTURE
+# 4. INTERFACE ARCHITECTURE
 # ────────────────────────────────────────────────
-st.markdown("<div class='header-box'><div class='logo'>AEGIS</div><div class='sub-logo'>WAT SYSTEMS | UNIVERSAL LOGIC AUTHORITY</div></div>", unsafe_allow_html=True)
-
-# Pillar Modules Matrix
 st.markdown("""
-    <div class='pillar-container'>
-        <div class='pillar-module'><div class='pillar-label'>PILLAR 01</div><div class='pillar-status'>CODE SECURITY</div></div>
-        <div class='pillar-module'><div class='pillar-label'>PILLAR 02</div><div class='pillar-status'>WORKFLOW</div></div>
-        <div class='pillar-module'><div class='pillar-label'>PILLAR 03</div><div class='pillar-status'>CONTRACTS</div></div>
+    <div class='header-container'>
+        <div class='brand-name'>AEGIS</div>
+        <div class='brand-motto'>WAT SYSTEMS | UNIVERSAL LOGIC AUTHORITY</div>
     </div>
 """, unsafe_allow_html=True)
 
-payload = st.text_area("TARGET PAYLOAD:", height=300, placeholder="Paste your architectural logic or source code for objective audit...")
+# Status Matrix (Fixed Regression)
+st.markdown("""
+    <div class='pillar-row'>
+        <div class='pillar-item'><span class='pillar-id'>P-01</span><span class='pillar-name'>CODE SECURITY</span></div>
+        <div class='pillar-item'><span class='pillar-id'>P-02</span><span class='pillar-name'>WORKFLOW</span></div>
+        <div class='pillar-item'><span class='pillar-id'>P-03</span><span class='pillar-name'>SMART CONTRACTS</span></div>
+    </div>
+""", unsafe_allow_html=True)
 
-if st.button("RUN GLOBAL AUDIT"):
+payload = st.text_area("TARGET PAYLOAD:", height=300, placeholder="Paste architectural logic or source code for authoritative dissection...")
+
+if st.button("EXECUTE GLOBAL AUDIT"):
     if not payload.strip():
-        st.error("ERROR: No data detected.")
+        st.error("SYSTEM ERROR: Null payload detected.")
     else:
-        with st.spinner("Processing structural integrity..."):
+        with st.spinner("Decoding structural DNA..."):
             st.session_state.result = run_aegis_audit(payload)
             st.session_state.scanned = True
             st.session_state.unlocked = False
+            
+            # Send Telegram Alert
+            if st.session_state.result:
+                score = st.session_state.result.get('trust_score', 0)
+                issue = st.session_state.result.get('findings', [{}])[0].get('issue', 'Unknown')
+                send_telegram_alert(score, issue)
+                
             st.rerun()
 
 # ────────────────────────────────────────────────
-# 4. AUDIT RESULTS
+# 5. THE REVEAL (RESULT ARCHITECTURE)
 # ────────────────────────────────────────────────
 if st.session_state.scanned and st.session_state.result:
     res = st.session_state.result
     score = res.get('trust_score', 0)
     
-    st.markdown(f"""
-        <div class='result-block'>
-            <div class='score-label'>GLOBAL LOGIC SCORE</div>
-            <div class='score-val'>{score}%</div>
-            <div style='margin-top: 20px;'>
-                <span style='background: #111111; color:#ffffff; padding: 4px 10px; font-size: 10px; font-weight:800;'>AUDIT COMPLETE</span>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<div class='result-card'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='score-label'>GLOBAL LOGIC SCORE</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='score-value'>{score}%</div>", unsafe_allow_html=True)
+    st.markdown("<div style='background:#3fb950; color:#0d1117; display:inline-block; padding:2px 8px; border-radius:3px; font-size:10px; font-weight:900;'>AUDIT SEALED</div>", unsafe_allow_html=True)
     
-    st.write("")
-    st.link_button("SHARE AUTHORITY ON X", f"https://twitter.com/intent/tweet?text=Logic score {score}% on AEGIS. God-tier validation by WAT SYSTEMS. 🛡️ Test at AEGIS.", use_container_width=True)
-
     findings = res.get("findings", [])
     if findings:
         f = findings[0]
         st.markdown(f"""
-            <div class='flaw-alert'>
-                <div class='flaw-head'>● FATAL FLAW DETECTED</div>
-                <div class='flaw-body'>{f.get('issue')}</div>
-                <div style='margin-top: 20px; font-size: 12px; opacity: 0.7;'>IMPACT: {f.get('catastrophic_impact')}</div>
+            <div class='alert-box'>
+                <div class='alert-title'>● DETECTED FATAL FLAW</div>
+                <div class='alert-body'>{f.get('issue')}</div>
+                <div style='margin-top:15px; font-size:12px; color:#8b949e;'>
+                    <b>IMPACT:</b> {f.get('catastrophic_impact')}
+                </div>
             </div>
         """, unsafe_allow_html=True)
         
-        # The Cure (Locked Path)
+        st.write("")
+        st.link_button("SHARE AUTHORITY ON X", f"[https://twitter.com/intent/tweet?text=Logic](https://twitter.com/intent/tweet?text=Logic) Authority Scanned. Score: {score}%. 🛡️ Test yours at AEGIS.", use_container_width=True)
+
+        # Sovereign Paywall (Premium Path)
         st.write("")
         if not st.session_state.unlocked:
             st.markdown("""
-                <div class='cure-locked'>
-                    <div style='font-weight:900; letter-spacing:1px;'>REMEDIATION RESTRICTED</div>
-                    <div style='color:#666; font-size:12px; margin-top:5px;'>Enterprise pass required to unlock technical solution.</div>
+                <div class='paywall-container'>
+                    <div style='color:#e3b341; font-weight:900; font-size:10px; letter-spacing:2px; margin-bottom:10px;'>REMEDIATION RESTRICTED</div>
+                    <div style='color:#8b949e; font-size:12px; margin-bottom:20px;'>Enterprise pass required to decrypt the technical solution.</div>
                 </div>
             """, unsafe_allow_html=True)
             
-            st.link_button("SECURE ENTERPRISE PASS ($9)", "https://porschza.gumroad.com/l/AEGIS", type="primary", use_container_width=True)
+            st.link_button("SECURE ENTERPRISE PASS ($9)", "[https://porschza.gumroad.com/l/AEGIS](https://porschza.gumroad.com/l/AEGIS)", type="primary", use_container_width=True)
             
-            passcode = st.text_input("INPUT PASSCODE:", type="password")
-            if st.button("UNLOCK SOLUTION"):
+            passcode = st.text_input("ACCESS PASSCODE:", type="password", key="pass_input")
+            if st.button("DECRYPT REMEDIATION"):
                 if passcode == st.secrets.get("AEGIS_PASSCODE", "1234"):
                     st.session_state.unlocked = True
                     st.rerun()
                 else: st.error("Access Denied.")
         else:
-            st.markdown(f"""
-                <div class='cure-unlocked'>
-                    <div style='font-weight:900; color: #238636; margin-bottom: 10px;'>TECHNICAL SOLUTION</div>
-                    <code>{f.get('the_cure')}</code>
-                </div>
-            """, unsafe_allow_html=True)
+            st.success("✅ SOVEREIGN ACCESS GRANTED")
+            st.markdown("### 🟢 TECHNICAL SOLUTION")
+            st.code(f.get('the_cure'), language='python')
 
-    if st.button("CLEAR TERMINAL"):
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    if st.button("RESET TERMINAL"):
         st.session_state.scanned = False
         st.session_state.result = None
         st.rerun()
 
-st.markdown("<div style='text-align:center; color:#999999; font-size:9px; margin-top:100px; font-weight:700; letter-spacing:2px;'>WAT SYSTEMS | AEGIS v12.5 | INDUSTRIAL AUTHORITY</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center; color:#30363d; font-size:10px; margin-top:80px; font-weight:700; letter-spacing:3px;'>WAT SYSTEMS | AEGIS v13.0 | SOVEREIGN AUTHORITY</div>", unsafe_allow_html=True)

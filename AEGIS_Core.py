@@ -4,253 +4,187 @@ import requests
 import urllib.parse
 
 # ────────────────────────────────────────────────
-# 1. ENTERPRISE DESIGN SYSTEM (PREMIUM 2026)
+# 1. SOVEREIGN DESIGN SYSTEM (ULTRA-PREMIUM)
 # ────────────────────────────────────────────────
 st.set_page_config(
-    page_title="AEGIS | WAT SYSTEMS",
-    layout="wide",  # เปลี่ยนเป็น wide เพื่อให้ดูโปรกว้างขึ้น
-    page_icon="🛡️",
-    initial_sidebar_state="collapsed"  # Sidebar พับไว้ก่อน ดูสะอาด
+    page_title="AEGIS | UNIVERSAL AUTHORITY", 
+    layout="wide", 
+    page_icon="🛡️"
 )
 
-# Session States
+# Initialize States (Core Logic Unchanged)
 if 'scanned' not in st.session_state: st.session_state.scanned = False
 if 'result' not in st.session_state: st.session_state.result = None
 if 'unlocked' not in st.session_state: st.session_state.unlocked = False
 
-# ── Premium Obsidian-Inspired Dark Theme ──
+# The Obsidian Enterprise Framework
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@500;700&display=swap');
 
-    /* Global */
+    /* Global Reset & Authority Background */
     [data-testid="stHeader"], #MainMenu, footer {visibility: hidden;}
-    .main { background-color: #0a0a0a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-    .stApp { background-color: #0a0a0a; }
+    .stApp { background-color: #000000; }
+    
+    .block-container { 
+        padding-top: 5rem !important; 
+        max-width: 1000px !important; 
+    }
 
-    /* Typography */
-    h1, h2, h3 { font-weight: 700; letter-spacing: -0.025em; }
-    code, pre { font-family: 'JetBrains Mono', monospace; }
+    /* Typography Authority */
+    html, body, [class*="css"] { 
+        font-family: 'Inter', sans-serif !important; 
+        color: #ffffff; 
+        -webkit-font-smoothing: antialiased;
+    }
 
-    /* Header */
-    .header-container {
-        padding: 6rem 0 4rem;
-        text-align: center;
-        border-bottom: 1px solid #1f2937;
-        margin-bottom: 3rem;
+    /* Header: The Billion Dollar Signature */
+    .brand-section {
+        padding-bottom: 80px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        margin-bottom: 60px;
     }
     .brand-logo {
-        font-size: 6.5rem;
         font-weight: 900;
-        letter-spacing: -0.12em;
+        font-size: 5.5rem;
+        letter-spacing: -6px;
         color: #ffffff;
-        line-height: 0.85;
         margin: 0;
+        line-height: 0.75;
+        background: linear-gradient(180deg, #FFFFFF 0%, #444444 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
-    .brand-subtitle {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: #64748b;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        margin-top: 1.5rem;
-        opacity: 0.9;
-    }
-
-    /* Module Grid */
-    .module-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0 5rem;
-    }
-    .module-card {
-        background: #111827;
-        border: 1px solid #1f2937;
-        border-radius: 1rem;
-        padding: 2rem 1.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-    }
-    .module-card:hover {
-        border-color: #3b82f6;
-        transform: translateY(-6px);
-        box-shadow: 0 20px 35px -10px rgba(59,130,246,0.18);
-    }
-    .module-status {
-        font-size: 0.85rem;
+    .brand-meta {
+        font-size: 11px;
         font-weight: 700;
-        color: #10b981;
+        color: #58a6ff;
+        letter-spacing: 12px;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        display: block;
-        margin-bottom: 0.75rem;
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
-    .module-name {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #f1f5f9;
+    .brand-meta::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, #58a6ff, transparent);
+        opacity: 0.3;
     }
 
-    /* Textarea - Terminal Style */
-    .stTextArea textarea {
-        background-color: #0f172a !important;
-        border: 1px solid #334155 !important;
-        border-radius: 1rem !important;
-        color: #e2e8f0 !important;
+    /* Matrix Pillar Display (Stark Industrial) */
+    .pillar-row {
+        display: flex;
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin-bottom: 50px;
+    }
+    .pillar-box {
+        flex: 1;
+        background: #000000;
+        padding: 30px 25px;
+        transition: 0.4s;
+    }
+    .pillar-box:hover { background: #050505; }
+    .p-id { font-size: 8px; font-weight: 900; color: #444; text-transform: uppercase; letter-spacing: 2px; }
+    .p-title { font-size: 12px; font-weight: 700; color: #ffffff; margin-top: 8px; letter-spacing: 1px; }
+
+    /* The Obsidian Terminal */
+    .stTextArea textarea { 
+        background-color: #020202 !important; 
+        border: 1px solid #111111 !important; 
+        border-radius: 4px !important; 
+        color: #ededed !important; 
         font-family: 'JetBrains Mono', monospace !important;
-        font-size: 1rem !important;
-        padding: 1.8rem !important;
-        line-height: 1.7;
-        min-height: 380px;
-        transition: all 0.25s;
+        font-size: 16px !important;
+        padding: 40px !important;
+        line-height: 1.8;
+        min-height: 400px !important;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5) !important;
     }
-    .stTextArea textarea:focus {
-        border-color: #60a5fa !important;
-        box-shadow: 0 0 0 4px rgba(96,165,250,0.2) !important;
-    }
+    .stTextArea textarea:focus { border-color: #333333 !important; }
 
-    /* Primary CTA Button */
-    div.stButton > button[kind="primary"], div.stButton > button {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-        color: white !important;
-        font-weight: 600 !important;
-        font-size: 1.1rem !important;
-        border-radius: 1rem !important;
-        padding: 1.4rem 0 !important;
+    /* Action Trigger (Executioner Style) */
+    div.stButton > button {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-weight: 900 !important;
+        font-size: 15px !important;
+        border-radius: 2px !important;
+        padding: 28px 0 !important;
         width: 100% !important;
         border: none !important;
-        letter-spacing: 0.04em;
-        transition: all 0.3s ease;
-        box-shadow: 0 6px 12px -4px rgba(59,130,246,0.3);
-        margin: 2rem 0 1rem;
+        text-transform: uppercase !important;
+        letter-spacing: 6px !important;
+        transition: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        margin-top: 40px;
     }
-    div.stButton > button:hover {
-        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%) !important;
-        transform: translateY(-4px);
-        box-shadow: 0 15px 30px -8px rgba(59,130,246,0.45);
-    }
-
-    /* Result Container */
-    .result-container {
-        background: #111827;
-        border: 1px solid #1f2937;
-        border-radius: 1.25rem;
-        padding: 3.5rem 3rem;
-        margin: 4rem 0;
-    }
-    .score-header {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #94a3b8;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-    }
-    .score-number {
-        font-size: 10rem;
-        font-weight: 900;
-        color: #ffffff;
-        letter-spacing: -0.1em;
-        line-height: 0.8;
-        margin: 0.5rem 0 1.5rem;
-    }
-    .validated-badge {
-        background: #1e40af;
-        color: #bfdbfe;
-        padding: 0.5rem 1.25rem;
-        border-radius: 9999px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        display: inline-block;
+    div.stButton > button:hover { 
+        background: #58a6ff !important; 
+        color: #ffffff !important;
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(88, 166, 255, 0.3);
     }
 
-    /* Finding Cards */
-    .finding-card {
-        border-left: 5px solid #ef4444;
-        background: #0f172a;
-        border-radius: 0.75rem;
-        padding: 2rem;
-        margin: 2rem 0;
-        transition: all 0.25s;
+    /* Audit Result: The Reveal Wall */
+    .result-wall {
+        border: 1px solid #111111;
+        padding: 100px 80px;
+        margin-top: 100px;
+        background: #000000;
+        position: relative;
     }
-    .finding-card:hover {
-        border-left-color: #f87171;
-        box-shadow: 0 8px 20px -6px rgba(239,68,68,0.15);
+    .result-wall::before {
+        content: ""; position: absolute; top: -1px; left: -1px; width: 80px; height: 80px;
+        border-top: 2px solid #58a6ff; border-left: 2px solid #58a6ff;
     }
-    .finding-label {
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: #f87171;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        margin-bottom: 1rem;
-        display: block;
+    .score-label { font-size: 13px; font-weight: 800; color: #58a6ff; letter-spacing: 6px; text-transform: uppercase; }
+    .score-hero { font-size: 180px; font-weight: 900; color: #ffffff; letter-spacing: -18px; line-height: 0.8; margin: 40px 0; }
+    
+    /* Detailed Finding Cards (High-End Audit) */
+    .finding-block {
+        border-top: 1px solid #111111;
+        padding: 60px 0;
+        margin-top: 60px;
     }
-    .finding-issue {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #f1f5f9;
-        margin-bottom: 1rem;
-    }
-    .finding-impact {
-        font-size: 1.1rem;
-        color: #cbd5e1;
-        line-height: 1.7;
-    }
+    .f-id { font-size: 10px; font-weight: 900; color: #ff4d4d; text-transform: uppercase; letter-spacing: 3px; }
+    .f-title { font-size: 28px; font-weight: 700; color: #ffffff; margin: 15px 0; letter-spacing: -0.5px; }
+    .f-impact { font-size: 18px; color: #888888; line-height: 1.8; font-weight: 400; }
 
-    /* Locked Section */
-    .locked-section {
-        background: #1e293b;
-        border: 1px solid #334155;
-        border-radius: 1rem;
-        padding: 3rem;
+    /* The Cure: Exclusive Chamber */
+    .cure-chamber {
+        background: #050505;
+        border: 1px solid #221d00;
+        padding: 60px;
         text-align: center;
-        margin: 2.5rem 0;
+        margin-top: 40px;
     }
-    .locked-text {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #fbbf24;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-    }
+    .locked-tag { font-size: 11px; font-weight: 800; color: #e3b341; letter-spacing: 6px; text-transform: uppercase; display: block; margin-bottom: 25px; }
 
-    /* Share Button */
-    .share-link {
-        display: inline-block;
-        background: transparent;
-        border: 1px solid #475569;
-        color: #e2e8f0 !important;
-        padding: 1rem 2.5rem;
-        border-radius: 1rem;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all 0.3s;
+    /* Viral Share Integration */
+    .share-strip {
+        margin-top: 100px;
+        padding-top: 60px;
+        border-top: 1px solid #111111;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    .share-link:hover {
-        background: #ffffff;
-        color: #0f172a !important;
-        border-color: #ffffff;
-        transform: translateY(-3px);
+    .share-text { font-size: 13px; color: #555; font-weight: 600; letter-spacing: 1px; }
+    .share-link { 
+        font-size: 14px; font-weight: 800; color: #ffffff; text-decoration: none; 
+        border-bottom: 2px solid #58a6ff; padding-bottom: 8px; transition: 0.3s;
     }
-
-    /* Footer */
-    .app-footer {
-        text-align: center;
-        color: #475569;
-        font-size: 0.95rem;
-        font-weight: 500;
-        margin: 8rem 0 4rem;
-        letter-spacing: 0.08em;
-    }
+    .share-link:hover { color: #58a6ff; transform: translateX(5px); }
     </style>
 """, unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────
-# 2. TELEGRAM RADAR (unchanged)
+# 2. TELEGRAM RADAR (SYSTEM LOGIC PRESERVED)
 # ────────────────────────────────────────────────
 def send_radar(score, issues_count, status="SUCCESS"):
     try:
@@ -263,7 +197,7 @@ def send_radar(score, issues_count, status="SUCCESS"):
     except: pass
 
 # ────────────────────────────────────────────────
-# 3. SUPREME ENGINE (unchanged)
+# 3. SUPREME ENGINE (SYSTEM LOGIC PRESERVED)
 # ────────────────────────────────────────────────
 def run_audit(payload):
     api_key = st.secrets.get("OPENROUTER_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY")
@@ -293,101 +227,92 @@ def run_audit(payload):
     return {"trust_score": 0, "findings": [{"issue": "TOTAL_UPLINK_FAILURE", "catastrophic_impact": last_err, "the_cure": "Verify API Status."}]}
 
 # ────────────────────────────────────────────────
-# 4. INTERFACE (upgraded layout)
+# 4. INTERFACE ARCHITECTURE
 # ────────────────────────────────────────────────
 st.markdown("""
-    <div class="header-container">
-        <div class="brand-logo">AEGIS</div>
-        <div class="brand-subtitle">WAT SYSTEMS — Universal Logic Authority</div>
+    <div class='brand-section'>
+        <h1 class='brand-logo'>AEGIS</h1>
+        <div class='brand-meta'>WAT SYSTEMS | UNIVERSAL LOGIC AUTHORITY</div>
     </div>
 """, unsafe_allow_html=True)
 
+# Industrial Module Grid
 st.markdown("""
-    <div class="module-grid">
-        <div class="module-card"><span class="module-status">OPERATIONAL</span><div class="module-name">CODE SECURITY</div></div>
-        <div class="module-card"><span class="module-status">OPERATIONAL</span><div class="module-name">WORKFLOW LOGIC</div></div>
-        <div class="module-card"><span class="module-status">OPERATIONAL</span><div class="module-name">SMART CONTRACTS</div></div>
+    <div class='pillar-row'>
+        <div class='pillar-box'><span class='p-id'>PROTOCOL_01</span><div class='p-title'>CODE_SECURITY</div></div>
+        <div class='pillar-box'><span class='p-id'>PROTOCOL_02</span><div class='p-title'>LOGIC_FLOW</div></div>
+        <div class='pillar-box'><span class='p-id'>PROTOCOL_03</span><div class='p-title'>WEB3_AUDIT</div></div>
     </div>
 """, unsafe_allow_html=True)
 
-payload = st.text_area("ENTER TARGET LOGIC / SOURCE CODE / ARCHITECTURE", height=400,
-                       placeholder="Paste your smart contract, Python/JS code, workflow description, or full architecture here...")
+payload = st.text_area("PAYLOAD_INJECTION:", height=400, placeholder="/// INJECT ARCHITECTURAL DNA FOR DISSECTION")
 
-if st.button("EXECUTE SUPREME AUDIT", type="primary"):
-    if not payload.strip():
-        st.error("ERROR: No payload provided.")
+if st.button("EXECUTE SUPREME AUDIT"):
+    if not payload.strip(): st.error("ERROR: NULL_PAYLOAD")
     else:
-        with st.spinner("Analyzing logic integrity..."):
+        with st.spinner("Decoding DNA..."):
             st.session_state.result = run_audit(payload)
             st.session_state.scanned = True
             st.session_state.unlocked = False
             st.rerun()
 
 # ────────────────────────────────────────────────
-# 5. THE REVEAL (premium freemium display)
+# 5. AUDIT REVEAL (PREMIUM FREEMIUM EXPERIENCE)
 # ────────────────────────────────────────────────
 if st.session_state.scanned and st.session_state.result:
     res = st.session_state.result
     score = res.get('trust_score', 0)
-
-    st.markdown("<div class='result-container'>", unsafe_allow_html=True)
-
-    col_score, col_badge = st.columns([4, 1])
-    with col_score:
-        st.markdown(f"<div class='score-header'>GLOBAL TRUST SCORE</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='score-number'>{score}</div>", unsafe_allow_html=True)
-    with col_badge:
-        st.markdown("<div style='padding-top:5rem;'><div class='validated-badge'>VALIDATED BY AEGIS CORE</div></div>", unsafe_allow_html=True)
-
-    # Share
-    share_msg = f"AEGIS audit complete: {score}% trust score | Verified by WAT SYSTEMS 🛡️"
-    share_url = f"https://x.com/intent/tweet?text={urllib.parse.quote(share_msg)}&url=https://aegis-auditor.streamlit.app"
+    
+    st.markdown("<div class='result-wall'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='score-label'>GLOBAL_LOGIC_INTEGRITY</div><div class='score-hero'>{score}%</div>", unsafe_allow_html=True)
+    
+    # Premium Social Share
+    share_msg = f"My project logic scored {score}% on AEGIS. God-tier validation by WAT SYSTEMS. 🛡️🔥"
+    share_url = f"https://twitter.com/intent/tweet?text={urllib.parse.quote(share_msg)}&url=https://aegis-auditor.streamlit.app"
     st.markdown(f"""
-        <div style="text-align:center; margin:3rem 0;">
-            <a href="{share_url}" target="_blank" class="share-link">SHARE RESULT ON 𝕏</a>
+        <div class='share-strip'>
+            <span class='share-text'>PUBLIC_AUTHORITY_VERIFIED</span>
+            <a href='{share_url}' target='_blank' class='share-link'>𝕏 BROADCAST AUTHORITY</a>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<h2 style='margin:3rem 0 2rem; font-size:2rem;'>Detected Critical Vulnerabilities</h2>", unsafe_allow_html=True)
-
+    # Detailed Risks (High Quality Freemium Value)
+    st.write("")
+    st.subheader("🚨 DETECTED LOGIC FAILURES")
     for i, f in enumerate(res.get("findings", [])):
         st.markdown(f"""
-            <div class="finding-card">
-                <span class="finding-label">ISSUE {i+1:02}</span>
-                <div class="finding-issue">{f.get('issue')}</div>
-                <div class="finding-impact"><strong>Catastrophic Impact:</strong> {f.get('catastrophic_impact')}</div>
+            <div class='finding-block'>
+                <span class='f-id'>RISK_IDENTIFIER_{i+1:02}</span>
+                <div class='f-title'>{f.get('issue')}</div>
+                <div class='f-impact'><b>ANALYSIS:</b> "{f.get('catastrophic_impact')}"</div>
             </div>
         """, unsafe_allow_html=True)
-
+        
+        # Paywall for The Cure
         if not st.session_state.unlocked:
-            st.markdown("""
-                <div class="locked-section">
-                    <span class="locked-text">🔒 FULL REMEDIATION LOCKED</span>
-                    <p style="color:#94a3b8; margin-top:1rem;">Enterprise access required to view detailed fixes and code-level cures.</p>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown("<div class='cure-chamber'><span class='locked-tag'>🔒 REMEDIATION_RESTRICTED</span></div>", unsafe_allow_html=True)
         else:
-            st.success("**Recommended Remediation**")
-            st.code(f.get('the_cure'), language="python")
+            st.success("**TECHNICAL REMEDIATION:**")
+            st.code(f.get('the_cure'), language='python')
 
+    # Premium Conversion Experience
     if not st.session_state.unlocked:
-        st.markdown("<h3 style='margin:4rem 0 1.5rem;'>Unlock Enterprise Remediation</h3>", unsafe_allow_html=True)
-        st.link_button("SECURE ACCESS — $9 ONE-TIME", "https://porschza.gumroad.com/l/AEGIS",
-                       type="primary", use_container_width=True)
-
-        passcode = st.text_input("ENTER ACCESS PASSCODE", type="password")
-        if st.button("UNLOCK FULL REPORT"):
+        st.write("")
+        st.link_button("👉 SECURE SOVEREIGN PASS ($9)", "https://porschza.gumroad.com/l/AEGIS", type="primary", use_container_width=True)
+        
+        st.write("")
+        passcode = st.text_input("ENTER_PASSCODE:", type="password")
+        if st.button("UNLOCK_REMEDIATION"):
             if passcode == st.secrets.get("AEGIS_PASSCODE", "1234"):
                 st.session_state.unlocked = True
                 st.rerun()
-            else:
-                st.error("ACCESS DENIED — Invalid passcode.")
+            else: st.error("ACCESS_DENIED")
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-    if st.button("START NEW AUDIT SESSION", use_container_width=True):
+    
+    if st.button("RESET_AUDIT_TERMINAL"):
         st.session_state.scanned = False
         st.session_state.result = None
         st.rerun()
 
-st.markdown("<div class='app-footer'>WAT SYSTEMS | AEGIS v32.0 — Supreme Logic Authority © 2026</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center; color:#1a1a1a; font-size:10px; margin-top:250px; font-weight:700; letter-spacing:10px;'>WAT SYSTEMS | AEGIS v33.0 | SOVEREIGN AUTHORITY</div>", unsafe_allow_html=True)

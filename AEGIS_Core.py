@@ -5,7 +5,7 @@ import urllib.parse
 import time
 
 # ────────────────────────────────────────────────
-# 1. SOVEREIGN INDUSTRIAL UI (HIGH-FIDELITY AUTHORITY)
+# 1. SOVEREIGN INDUSTRIAL UI (FINAL PREMIUM STANDARD)
 # ────────────────────────────────────────────────
 st.set_page_config(
     page_title="AEGIS | UNIVERSAL AUTHORITY", 
@@ -18,7 +18,7 @@ if 'scanned' not in st.session_state: st.session_state.scanned = False
 if 'result' not in st.session_state: st.session_state.result = None
 if 'unlocked' not in st.session_state: st.session_state.unlocked = False
 
-# Premium Authority Styling - Demolishing the "Student" look.
+# Premium Authority Styling - Absolute Obsidian
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
@@ -36,7 +36,7 @@ st.markdown("""
     .logo-main { font-weight: 800; font-size: 3.2rem; letter-spacing: -3px; color: #ffffff; margin: 0; line-height: 1; }
     .logo-sub { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 7px; text-transform: uppercase; margin-top: 10px; opacity: 0.8; }
 
-    /* Industrial Pillars Matrix */
+    /* Matrix Pillars Matrix */
     .pillar-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 35px; }
     .pillar-box { 
         background: rgba(255,255,255,0.02); 
@@ -63,9 +63,9 @@ st.markdown("""
     }
     .stTextArea textarea:focus { border-color: #58a6ff !important; }
 
-    /* Premium Execution Button - Fixed white block and shadow issues */
+    /* Executive Execution Button */
     div.stButton > button {
-        background: #ffffff !important;
+        background-color: #ffffff !important;
         color: #000000 !important;
         font-weight: 800 !important;
         border-radius: 4px !important;
@@ -85,7 +85,7 @@ st.markdown("""
         box-shadow: 0 10px 40px rgba(88, 166, 255, 0.25);
     }
 
-    /* Result Section: Authority Reveal */
+    /* Result Section */
     .result-aura { 
         background: #000000; 
         border: 1px solid #1a1a1a; 
@@ -97,7 +97,7 @@ st.markdown("""
     .score-label { font-size: 12px; font-weight: 700; color: #8b949e; letter-spacing: 5px; text-transform: uppercase; }
     .score-val { font-size: 120px; font-weight: 800; color: #ffffff; letter-spacing: -10px; line-height: 1; margin: 25px 0; }
     
-    /* Detailed Finding Cards (Premium Freemium) */
+    /* Detailed Finding Cards */
     .finding-card { 
         background: rgba(255,255,255,0.01); 
         border: 1px solid rgba(255,255,255,0.05); 
@@ -161,21 +161,22 @@ def send_telegram_radar(score, issues, status="SUCCESS"):
     except: pass
 
 # ────────────────────────────────────────────────
-# 3. SUPREME AUDIT ENGINE (MULTI-MODEL RESILIENCE)
+# 3. SUPREME AUDIT ENGINE (ULTRA RESILIENCE)
 # ────────────────────────────────────────────────
 def run_aegis_audit(payload):
-    # เรดาร์ต้องทำงานก่อนเป็นอันดับแรก
     send_telegram_radar(0, [], status="AUDIT_INITIATED")
     
     api_key = st.secrets.get("OPENROUTER_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY")
     if not api_key:
         return {"trust_score": 0, "findings": [{"issue": "UPLINK_FAILURE", "catastrophic_impact": "Secrets Missing.", "the_cure": "Configure Secrets."}]}
 
-    # ระบบ Model Pool เพื่อแก้ปัญหา 404 (ใช้อันที่เสถียรที่สุดในวินาทีนี้)
+    # Updated Model Pool (Confirmed Active as of now)
+    # We remove problematic exp models and use stable free-tier ones.
     model_pool = [
         "google/gemini-2.0-flash-001:free",
+        "deepseek/deepseek-r1:free",
         "meta-llama/llama-3.3-70b-instruct:free",
-        "google/gemini-2.0-pro-exp-02-05:free"
+        "google/gemini-flash-1.5-8b:free"
     ]
     
     last_error = ""
@@ -186,7 +187,7 @@ def run_aegis_audit(payload):
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "HTTP-Referer": "https://aegis.watsystems.tech",
-                    "X-Title": "AEGIS v27",
+                    "X-Title": "AEGIS v28 Authority",
                     "Content-Type": "application/json"
                 },
                 data=json.dumps({
@@ -197,7 +198,7 @@ def run_aegis_audit(payload):
                             "content": (
                                 "You are AEGIS, the supreme Logic Auditor by WAT SYSTEMS. "
                                 "Identify ALL structural and logic vulnerabilities. Be factual, professional, and brutal. "
-                                "Provide a detailed multi-point audit. justify the score. "
+                                "Provide a detailed multi-point audit. Justify the score. "
                                 "Output JSON ONLY: {\"trust_score\": int, \"strengths\": [\"str\"], \"findings\": [{\"issue\": \"str\", \"catastrophic_impact\": \"str\", \"the_cure\": \"str\"}]}"
                             )
                         },
@@ -216,16 +217,21 @@ def run_aegis_audit(payload):
                 send_telegram_radar(data.get('trust_score', 0), data.get('findings', []))
                 return data
             else:
-                last_error = f"API Error {response.status_code}: {response.text}"
-                continue # ลองโมเดลถัดไป
+                # Log detailed error from OpenRouter for fallback debugging
+                try:
+                    error_json = response.json()
+                    msg = error_json.get('error', {}).get('message', str(error_json))
+                    last_error = f"API {response.status_code} ({model}): {msg}"
+                except:
+                    last_error = f"API Error {response.status_code} for {model}"
+                continue 
                 
         except Exception as e:
-            last_error = str(e)
+            last_error = f"Model {model} failed: {str(e)}"
             continue
 
-    # หากล้มเหลวทุกโมเดล
     send_telegram_radar(0, [], status="SYSTEM_CRASH")
-    return {"trust_score": 0, "findings": [{"issue": "TOTAL_UPLINK_FAILURE", "catastrophic_impact": last_error, "the_cure": "Check API Keys or Credits."}]}
+    return {"trust_score": 0, "findings": [{"issue": "TOTAL_UPLINK_FAILURE", "catastrophic_impact": last_error, "the_cure": "Check API Keys or verify OpenRouter Credits."}]}
 
 # ────────────────────────────────────────────────
 # 4. SYSTEM INTERFACE
@@ -274,7 +280,7 @@ if st.session_state.scanned and st.session_state.result:
     share_url = f"https://twitter.com/intent/tweet?text={urllib.parse.quote(share_msg)}&url=https://aegis-auditor.streamlit.app"
     st.markdown(f"<div style='text-align:center;'><a href='{share_url}' target='_blank' class='x-btn'>𝕏 BROADCAST AUTHORITY</a></div>", unsafe_allow_html=True)
 
-    # Detailed Risks (The Premium Freemium Value)
+    # Detailed Risks
     st.write("")
     st.subheader("🚨 DETECTED LOGIC FAILURES")
     findings = res.get("findings", [])
@@ -319,4 +325,4 @@ if st.session_state.scanned and st.session_state.result:
         st.session_state.result = None
         st.rerun()
 
-st.markdown("<div style='text-align:center; color:#1a1a1a; font-size:10px; margin-top:140px; font-weight:700; letter-spacing:6px;'>WAT SYSTEMS | AEGIS v27.0 | SOVEREIGN AUTHORITY</div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:center; color:#1a1a1a; font-size:10px; margin-top:140px; font-weight:700; letter-spacing:6px;'>WAT SYSTEMS | AEGIS v28.0 | SOVEREIGN AUTHORITY</div>", unsafe_allow_html=True)

@@ -167,7 +167,7 @@ if st.session_state.scanned and st.session_state.result:
     """, unsafe_allow_html=True)
     
     # --- VIRAL TRIGGER: SHARE TO X ---
-    site_url = "[https://aegis-watsystems.streamlit.app](https://aegis-watsystems.streamlit.app)" # เปลี่ยนเป็นลิงก์ Streamlit ของคุณ
+    site_url = "[https://aegis-auditor-rdztzsskvkrgaefesuzynl.streamlit.app/](https://aegis-auditor-rdztzsskvkrgaefesuzynl.streamlit.app/)" 
     if score >= 85:
         tweet_text = f"My structural logic scored {score}% on AEGIS. God-tier architecture validated by WAT SYSTEMS. 🛡️🔥 Test your own payload before you deploy blind: {site_url}"
     else:

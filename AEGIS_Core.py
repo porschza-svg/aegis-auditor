@@ -19,7 +19,7 @@ if 'scanned' not in st.session_state: st.session_state.scanned = False
 if 'result' not in st.session_state: st.session_state.result = None
 if 'unlocked' not in st.session_state: st.session_state.unlocked = False
 
-# The Gemini "Neural Monolith" CSS
+# The Gemini "Neural Monolith" CSS (Premium Experience)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -107,7 +107,7 @@ st.markdown("""
     }
     .locked-tag { font-size: 11px; font-weight: 700; color: #fdd663; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 20px; display: block; }
 
-    /* 𝕏 Share Integration */
+    /* X Share Integration */
     .x-btn { 
         display: inline-block; 
         color: #ffffff !important; 
@@ -147,13 +147,11 @@ def run_audit(payload):
     api_key = st.secrets.get("OPENROUTER_API_KEY") or st.secrets.get("ANTHROPIC_API_KEY")
     if not api_key: return {"trust_score": 0, "findings": [{"issue": "UPLINK_OFFLINE", "catastrophic_impact": "API Key Missing.", "the_cure": "Set Secrets."}]}
 
-    # ใช้โมเดลตัวจริงที่เสถียรที่สุด (ถอดรุ่น :free ออกเพื่อเลี่ยง 404)
     model_pool = ["google/gemini-2.0-flash-001", "google/gemini-flash-1.5", "meta-llama/llama-3.3-70b-instruct"]
     
     last_err = ""
     for model in model_pool:
         try:
-            # 🚨 FIX: ใช้ระบบการส่งแบบ Standard เพื่อลดปัญหา 400
             payload_data = {
                 "model": model,
                 "messages": [
@@ -162,7 +160,6 @@ def run_audit(payload):
                 ],
                 "temperature": 0.0
             }
-            # Only use json_object for Gemini
             if "gemini" in model: payload_data["response_format"] = {"type": "json_object"}
 
             resp = requests.post(
@@ -174,5 +171,98 @@ def run_audit(payload):
             
             if resp.status_code == 200:
                 raw_json = resp.json()['choices'][0]['message']['content'].strip()
-                # Powerful JSON cleaning to prevent parse errors
-                if "
+                # Clean potential markdown wrapping
+                if raw_json.startswith("```"):
+                    raw_json = raw_json.split("```")[1]
+                    if raw_json.startswith("json"): raw_json = raw_json[4:]
+                    raw_json = raw_json.strip()
+                
+                result = json.loads(raw_json)
+                send_radar(result.get('trust_score', 0), len(result.get('findings', [])))
+                return result
+            
+            last_err = f"API {resp.status_code}: {resp.text}"
+        except Exception as e:
+            last_err = str(e)
+            continue
+            
+    return {"trust_score": 0, "findings": [{"issue": "TOTAL_UPLINK_FAILURE", "catastrophic_impact": last_err, "the_cure": "Check credits or status."}]}
+
+# ────────────────────────────────────────────────
+# 4. INTERFACE ARCHITECTURE (GEMINI STYLE)
+# ────────────────────────────────────────────────
+st.markdown("""
+    <div class="brand-box">
+        <h1 class="brand-logo">AEGIS Neural <span class="brand-sparkle">✦</span></h1>
+        <div class="brand-meta">NEURAL LOGIC AUTHORITY — WAT SYSTEMS</div>
+    </div>
+""", unsafe_allow_html=True)
+
+payload = st.text_area("", placeholder="How can AEGIS dissect your logic today? Paste architectural spec or code...")
+
+if st.button("Dissect Logic"):
+    if not payload.strip(): st.error("No data detected.")
+    else:
+        with st.spinner("Analyzing neural pathways..."):
+            st.session_state.result = run_audit(payload)
+            st.session_state.scanned = True
+            st.session_state.unlocked = False
+            st.rerun()
+
+# ────────────────────────────────────────────────
+# 5. THE REVEAL (PLUGIN EXPERIENCE)
+# ────────────────────────────────────────────────
+if st.session_state.scanned and st.session_state.result:
+    res = st.session_state.result
+    score = res.get('trust_score', 0)
+    
+    st.markdown("<div class='result-aura'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='score-label'>NEURAL TRUST INDEX</div><div class='score-val'>{score}%</div>", unsafe_allow_html=True)
+    st.markdown("<div class='badge-ai'>Analysis Authenticated by AEGIS v41.0 Neural Core</div>", unsafe_allow_html=True)
+    
+    share_msg = f"My project logic scored {score}% on AEGIS Neural Auditor. Verified by WAT SYSTEMS 🛡️✦"
+    share_url = f"https://x.com/intent/tweet?text={urllib.parse.quote(share_msg)}&url=https://aegis-auditor.streamlit.app"
+    st.markdown(f"<div><a href='{share_url}' target='_blank' class='x-btn'>Broadcast Authority on 𝕏</a></div>", unsafe_allow_html=True)
+
+    st.write("")
+    findings = res.get("findings", [])
+    for i, f in enumerate(findings):
+        st.markdown(f"""
+            <div class="finding-block">
+                <span class="f-header">VULNERABILITY_ID_{i+1:02}</span>
+                <div class="f-title">{f.get('issue')}</div>
+                <div class="f-impact"><b>DETAILED IMPACT:</b> {f.get('catastrophic_impact')}</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        if not st.session_state.unlocked:
+            st.markdown("""
+                <div class="locked-chamber">
+                    <span class="locked-tag">🔒 REMEDIATION ENCRYPTED</span>
+                    <div style="color:#5f6368; font-size:1rem; margin-bottom:20px;">Secure Enterprise Pass to decrypt the technical solution.</div>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.success("**TECHNICAL SOLUTION:**")
+            st.code(f.get('the_cure'), language='python')
+
+    if not st.session_state.unlocked:
+        st.write("")
+        st.link_button("👉 Secure Enterprise Pass ($9)", "https://porschza.gumroad.com/l/AEGIS", type="primary", use_container_width=True)
+        
+        st.write("")
+        passcode = st.text_input("Enter Passcode Authorization:", type="password")
+        if st.button("UNLOCK REMEDIATION"):
+            if passcode == st.secrets.get("AEGIS_PASSCODE", "1234"):
+                st.session_state.unlocked = True
+                st.rerun()
+            else: st.error("ACCESS DENIED.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    if st.button("New Dissection Session", type="secondary"):
+        st.session_state.scanned = False
+        st.session_state.result = None
+        st.rerun()
+
+st.markdown("<div class='footer'>WAT SYSTEMS | AEGIS v41.0 | NEURAL MONOLITH</div>", unsafe_allow_html=True)

@@ -6,10 +6,10 @@ import time
 import re
 
 # ────────────────────────────────────────────────
-# 1. SOVEREIGN DESIGN SYSTEM (FULL SPECTRUM UNICORN)
+# 1. SOVEREIGN DESIGN SYSTEM (FINAL UNICORN GRADE)
 # ────────────────────────────────────────────────
 st.set_page_config(
-    page_title="AEGIS | Neural Authority",
+    page_title="AEGIS | Hardened Authority",
     layout="centered",
     page_icon="🛡️",
     initial_sidebar_state="collapsed"
@@ -20,7 +20,7 @@ if 'scanned' not in st.session_state: st.session_state.scanned = False
 if 'result' not in st.session_state: st.session_state.result = None
 if 'unlocked' not in st.session_state: st.session_state.unlocked = False
 
-# High-Fidelity "Neural Void" CSS (Billion-Dollar Standard)
+# High-Fidelity "Neural Void" CSS
 st.markdown('''
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -71,11 +71,10 @@ div.stButton > button:hover { transform: scale(1.05); box-shadow: 0 10px 40px rg
     background: rgba(255, 255, 255, 0.01);
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 70px 50px; border-radius: 40px; margin-top: 60px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
 }
 .score-hero { font-size: 9rem; font-weight: 800; color: #ffffff; line-height: 0.85; margin: 25px 0; letter-spacing: -8px; }
 
-/* 5. Viral Share Button (Premium Hook) */
+/* 5. Viral Share Button */
 .x-share-container { margin: 30px 0 50px 0; text-align: left; }
 .x-share-btn { 
     display: inline-flex; align-items: center; gap: 12px;
@@ -87,22 +86,17 @@ div.stButton > button:hover { transform: scale(1.05); box-shadow: 0 10px 40px rg
 .x-share-btn:hover { background: #00f0ff; transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 240, 255, 0.3); }
 .x-share-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
-/* 6. Strategic Strengths (The Ego Builder) */
+/* 6. Strength & Finding Cards */
 .strength-card {
     background: rgba(138, 180, 248, 0.03);
     border: 1px solid rgba(138, 180, 248, 0.1);
     padding: 30px; border-radius: 20px; margin-bottom: 30px;
 }
-.s-tag { color: #8ab4f8; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
-.s-text { font-size: 1.1rem; color: #ffffff; font-weight: 500; line-height: 1.6; }
-
-/* 7. Precision Risks */
 .finding-box { border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 50px 0; margin-top: 50px; }
 .f-tag { color: #ff6b6b; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 20px; display: block; }
-.f-title { font-size: 2.2rem; font-weight: 700; color: #ffffff; margin-bottom: 20px; line-height: 1.1; letter-spacing: -1.5px; }
-.f-impact { font-size: 1.2rem; color: #9aa0a6; line-height: 1.8; }
+.f-title { font-size: 2.2rem; font-weight: 700; color: #ffffff; margin-bottom: 20px; line-height: 1.1; }
 
-/* 8. The Master Blueprint (The Real Value) */
+/* 7. The Master Blueprint (100x Value) */
 .blueprint-card {
     background: linear-gradient(180deg, rgba(227, 179, 65, 0.08) 0%, rgba(0,0,0,0) 100%);
     border: 1px solid rgba(227, 179, 65, 0.3);
@@ -115,21 +109,26 @@ div.stButton > button:hover { transform: scale(1.05); box-shadow: 0 10px 40px rg
 ''', unsafe_allow_html=True)
 
 # ────────────────────────────────────────────────
-# 2. TELEGRAM RADAR
+# 2. TELEGRAM RADAR (HARDENED)
 # ────────────────────────────────────────────────
 def send_radar(score, issues_count, latency=0):
     try:
         token = st.secrets.get("TELEGRAM_BOT_TOKEN")
         chat_id = st.secrets.get("TELEGRAM_CHAT_ID")
         if token and chat_id:
-            msg = (f"🛡️ *AEGIS AUTHORITY REPORT*\n\n● *INTEGRITY:* {score}%\n● *RISKS:* {issues_count}\n"
-                   f"● *LATENCY:* {latency:.2f}s\n\n📡 _WAT SYSTEMS AUTHORITY_")
+            # 🚨 FIX ID_03: Basic Rate Limiting check (Simulated)
+            st.session_state['last_radar'] = st.session_state.get('last_radar', 0)
+            if time.time() - st.session_state['last_radar'] < 2: return # Limit to 1 call per 2 seconds
+            
+            msg = (f"🛡️ *AEGIS HARDENED REPORT*\n\n● *INTEGRITY:* {score}%\n● *RISKS:* {issues_count}\n"
+                   f"● *LATENCY:* {latency:.2f}s\n\n📡 _Sovereign Operational_")
             requests.post(f"https://api.telegram.org/bot{token}/sendMessage", 
                           data={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"}, timeout=10)
+            st.session_state['last_radar'] = time.time()
     except: pass
 
 # ────────────────────────────────────────────────
-# 3. SUPREME ENGINE (FULL SPECTRUM PROMPT)
+# 3. SUPREME ENGINE (MASTER-GRADE)
 # ────────────────────────────────────────────────
 def run_audit(payload):
     start_t = time.time()
@@ -141,20 +140,20 @@ def run_audit(payload):
     last_err = ""
     for model in model_pool:
         try:
-            # 💎 FULL SPECTRUM VALUE PROMPT (Re-added Strengths)
+            # 💎 MASTER-GRADE PROMPT (VALUE MAXIMIZER)
             prompt = (
-                "You are AEGIS, the Lead Solutions Architect. Analyze for fatal logic failures. "
-                "Output JSON ONLY. "
-                "1. STRENGTHS: Highlight 2-3 valid architectural or logic wins (The Ego Builder). "
-                "2. FINDINGS: Provide critical failures. "
+                "You are AEGIS, the Supreme Lead Solutions Architect. Analyze for FATAL logic and architectural failures. "
+                "Output valid JSON ONLY. "
+                "1. STRENGTHS: Highlight architectural wins. "
+                "2. FINDINGS: Provide deep structural failures. "
                 "3. THE CURE: An EXHAUSTIVE 100x Value Master-Grade Blueprint: "
-                "A) ROOT CAUSE: Deep architectural why. B) REMEDIATION: Senior-level clean code. C) REFACTOR: Prevention strategy."
+                "A) ROOT CAUSE Analysis. B) STRATEGIC REMEDIATION (Senior Clean Code). C) ARCHITECTURAL REFACTOR. D) VALIDATION PROTOCOL."
                 "Format: {\"trust_score\": int, \"strengths\": [\"str\"], \"findings\": [{\"issue\": \"str\", \"catastrophic_impact\": \"str\", \"the_cure\": \"str\"}]}"
             )
             
             payload_data = {
                 "model": model,
-                "messages": [{"role": "system", "content": prompt}, {"role": "user", "content": f"AUDIT:\n{payload[:15000]}"}],
+                "messages": [{"role": "system", "content": prompt}, {"role": "user", "content": f"AUDIT_TARGET:\n{payload[:15000]}"}],
                 "temperature": 0.0
             }
             if "gemini" in model: payload_data["response_format"] = {"type": "json_object"}
@@ -170,13 +169,11 @@ def run_audit(payload):
                 match = re.search(r'\{.*\}', raw, re.DOTALL)
                 if match: 
                     result = json.loads(match.group(0), strict=False)
-                    latency = time.time() - start_t
-                    send_radar(result.get('trust_score', 0), len(result.get('findings', [])), latency)
+                    send_radar(result.get('trust_score', 0), len(result.get('findings', [])), time.time() - start_t)
                     return result
-            last_err = f"API {resp.status_code}: {resp.text}"
+            last_err = f"API Error {resp.status_code}"
         except Exception as e:
-            last_err = str(e)
-            continue
+            last_err = str(e); continue
             
     return {"trust_score": 0, "findings": [{"issue": "TOTAL_UPLINK_FAILURE", "catastrophic_impact": last_err, "the_cure": "Check credits."}]}
 
@@ -190,14 +187,14 @@ payload = st.text_area("", placeholder="How can AEGIS dissect your logic today? 
 if st.button("Dissect Neural Pathways"):
     if not payload.strip(): st.error("NULL_PAYLOAD")
     else:
-        with st.spinner("Analyzing structural DNA..."):
+        with st.spinner("Decoding structural DNA..."):
             st.session_state.result = run_audit(payload)
             st.session_state.scanned = True
             st.session_state.unlocked = False
             st.rerun()
 
 # ────────────────────────────────────────────────
-# 5. THE REVEAL (FULL SPECTRUM EXPERIENCE)
+# 5. THE REVEAL
 # ────────────────────────────────────────────────
 if st.session_state.scanned and st.session_state.result:
     res = st.session_state.result
@@ -206,35 +203,22 @@ if st.session_state.scanned and st.session_state.result:
     st.markdown("<div class='result-card'>", unsafe_allow_html=True)
     st.markdown(f"<div style='color:#58a6ff; font-weight:800; font-size:12px; letter-spacing:2px;'>NEURAL INTEGRITY</div><div class='score-hero'>{score}%</div>", unsafe_allow_html=True)
     
-    # Viral Share Section
-    share_msg = f"My logic scored {score}% on AEGIS Neural Auditor. Verified by WAT SYSTEMS 🛡️✦"
+    # Premier X-Share
+    share_msg = f"Neural Integrity Scanned: {score}% on AEGIS. Verified by WAT SYSTEMS 🛡️✦"
     share_url = f"https://x.com/intent/tweet?text={urllib.parse.quote(share_msg)}&url=https://aegis-auditor.streamlit.app"
-    st.markdown(f'''
-        <div class="x-share-container">
-            <a href="{share_url}" target="_blank" class="x-share-btn">
-                <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
-                BROADCAST AUTHORITY
-            </a>
-        </div>
-    ''', unsafe_allow_html=True)
+    st.markdown(f'<div class="x-share-container"><a href="{share_url}" target="_blank" class="x-share-btn"><svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>BROADCAST AUTHORITY</a></div>', unsafe_allow_html=True)
 
-    # Strategic Strengths (THE EGO BUILDER - RE-ADDED)
+    # 🛡️ Strategic Strengths
     st.write("")
     st.subheader("🛡️ STRATEGIC STRENGTHS")
     for s in res.get('strengths', []):
-        st.markdown(f'<div class="strength-card"><span class="s-tag">VALIDATED WIN</span><div class="s-text">{s}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="strength-card"><span style="color:#8ab4f8; font-size:10px; font-weight:900; letter-spacing:2px; display:block; margin-bottom:10px;">VALIDATED WIN</span><div style="font-size:1.1rem; color:#ffffff; font-weight:500;">{s}</div></div>', unsafe_allow_html=True)
 
-    # Detailed Risks
+    # 🚨 Detailed Risks
     st.write("")
     st.subheader("🚨 IDENTIFIED LOGIC FAILURES")
     for i, f in enumerate(res.get("findings", [])):
-        st.markdown(f'''
-            <div class="finding-box">
-                <span class="f-tag">ID_VULNERABILITY_{i+1:02}</span>
-                <div class="f-title">{f.get('issue')}</div>
-                <div class="f-impact"><b>CATASTROPHIC IMPACT:</b> {f.get('catastrophic_impact')}</div>
-            </div>
-        ''', unsafe_allow_html=True)
+        st.markdown(f'<div class="finding-box"><span class="f-tag">ID_VULNERABILITY_{i+1:02}</span><div class="f-title">{f.get("issue")}</div><div class="f-impact"><b>CATASTROPHIC IMPACT:</b> {f.get("catastrophic_impact")}</div></div>', unsafe_allow_html=True)
         
         if not st.session_state.unlocked:
             st.markdown('<div class="blueprint-card" style="text-align:center;"><span class="blueprint-label">🔒 SOVEREIGN BLUEPRINT ENCRYPTED</span><div style="color:#555; font-size:14px;">Secure Enterprise Pass to access 100X Value Mastery Blueprint.</div></div>', unsafe_allow_html=True)
@@ -245,17 +229,18 @@ if st.session_state.scanned and st.session_state.result:
     if not st.session_state.unlocked:
         st.write("")
         st.link_button("👉 SECURE SOVEREIGN PASS ($9)", "https://porschza.gumroad.com/l/AEGIS", type="primary", use_container_width=True)
+        
+        # 🚨 FIX ID_02: Remove hardcoded default '1234'
         passcode = st.text_input("AUTHORIZE_PASSCODE:", type="password")
         if st.button("UNLOCK MASTER BLUEPRINT"):
-            if passcode == st.secrets.get("AEGIS_PASSCODE", "1234"):
+            aegis_pass = st.secrets.get("AEGIS_PASSCODE")
+            if aegis_pass and passcode == aegis_pass:
                 st.session_state.unlocked = True
                 st.rerun()
-            else: st.error("AUTHORIZATION_DENIED")
+            else: st.error("AUTHORIZATION DENIED.")
 
     st.markdown("</div>", unsafe_allow_html=True)
     if st.button("New Scan Session", type="secondary"):
-        st.session_state.scanned = False
-        st.session_state.result = None
-        st.rerun()
+        st.session_state.scanned = False; st.session_state.result = None; st.rerun()
 
-st.markdown('<div style="text-align:center; color:#222; font-size:11px; margin-top:10rem; padding-bottom:5rem; letter-spacing:10px; font-weight:800;">WAT SYSTEMS | AEGIS v48.0 | SOVEREIGN AUTHORITY</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align:center; color:#222; font-size:11px; margin-top:10rem; padding-bottom:5rem; letter-spacing:10px; font-weight:800;">WAT SYSTEMS | AEGIS v49.0 | SOVEREIGN AUTHORITY</div>', unsafe_allow_html=True)
